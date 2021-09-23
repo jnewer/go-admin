@@ -3,8 +3,8 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"pear-admin-go/app/global/api/request"
-	"pear-admin-go/app/global/api/response"
+	"pear-admin-go/app/global/request"
+	"pear-admin-go/app/global/response"
 	"pear-admin-go/app/service"
 )
 

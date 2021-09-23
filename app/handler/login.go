@@ -8,8 +8,8 @@ import (
 	"github.com/mssola/user_agent"
 	"net/http"
 	"pear-admin-go/app/dao"
-	"pear-admin-go/app/global/api/request"
-	"pear-admin-go/app/global/api/response"
+	"pear-admin-go/app/global/request"
+	response2 "pear-admin-go/app/global/response"
 	"pear-admin-go/app/model"
 	"pear-admin-go/app/service"
 	"pear-admin-go/app/util/captcha"
@@ -25,12 +25,12 @@ func Login(c *gin.Context) {
 func LoginHandler(c *gin.Context) {
 	var req request.LoginForm
 	if err := c.ShouldBind(&req); err != nil {
-		response.ErrorResp(c).SetMsg(validate.GetValidateError(err)).WriteJsonExit()
+		response2.ErrorResp(c).SetMsg(validate.GetValidateError(err)).WriteJsonExit()
 		return
 	}
 	isLock := service.CheckLock(req.UserName)
 	if isLock {
-		response.ErrorResp(c).SetMsg("密码错误次数超限，账号已锁定,请稍后再试").SetType(model.OperOther).Log(e.LoginHandler, req).WriteJsonExit()
+		response2.ErrorResp(c).SetMsg("密码错误次数超限，账号已锁定,请稍后再试").SetType(model.OperOther).Log(e.LoginHandler, req).WriteJsonExit()
 		return
 	}
 	userAgent := c.Request.Header.Get("User-Agent")
@@ -52,21 +52,21 @@ func LoginHandler(c *gin.Context) {
 		info.Status = "0"
 		err = dao.NewLoginInfoImpl().Insert(info)
 		if err != nil {
-			response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperOther).Log(e.LoginHandler, req).WriteJsonExit()
+			response2.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperOther).Log(e.LoginHandler, req).WriteJsonExit()
 			return
 		}
 		if having > 0 {
-			response.ErrorResp(c).SetMsg("账号或密码不正确,还有"+gconv.String(having)+"次之后账号将锁定").SetType(model.OperOther).Log(e.LoginHandler, req).WriteJsonExit()
+			response2.ErrorResp(c).SetMsg("账号或密码不正确,还有"+gconv.String(having)+"次之后账号将锁定").SetType(model.OperOther).Log(e.LoginHandler, req).WriteJsonExit()
 			return
 		} else {
-			response.ErrorResp(c).SetMsg("密码错误次数超限，账号已锁定,请稍后再试").SetType(model.OperOther).Log(e.LoginHandler, req).WriteJsonExit()
+			response2.ErrorResp(c).SetMsg("密码错误次数超限，账号已锁定,请稍后再试").SetType(model.OperOther).Log(e.LoginHandler, req).WriteJsonExit()
 			return
 		}
 	} else {
 		var online model.AdminOnline
 		err = pkg.CopyFields(&online, info)
 		if err != nil {
-			response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperOther).Log(e.LoginHandler, req).WriteJsonExit()
+			response2.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperOther).Log(e.LoginHandler, req).WriteJsonExit()
 			return
 		}
 		online.SessionID = sid
@@ -82,9 +82,9 @@ func LoginHandler(c *gin.Context) {
 		info.Status = "1"
 		err := dao.NewLoginInfoImpl().Insert(info)
 		if err != nil {
-			response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperOther).Log(e.LoginHandler, req).WriteJsonExit()
+			response2.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperOther).Log(e.LoginHandler, req).WriteJsonExit()
 		}
-		response.SuccessResp(c).SetMsg("登陆成功").SetType(model.OperOther).Log(e.LoginHandler, req).WriteJsonExit()
+		response2.SuccessResp(c).SetMsg("登陆成功").SetType(model.OperOther).Log(e.LoginHandler, req).WriteJsonExit()
 	}
 }
 
@@ -104,24 +104,24 @@ func NotFound(c *gin.Context) {
 func GetCaptcha(c *gin.Context) {
 	id, b64s, err := captcha.CaptMake()
 	if err != nil {
-		response.ErrorResp(c).SetMsg(err.Error()).WriteJsonExit()
+		response2.ErrorResp(c).SetMsg(err.Error()).WriteJsonExit()
 		return
 	}
-	response.SuccessResp(c).SetData(response.CaptchaResponse{CaptchaId: id, PicPath: b64s}).WriteJsonExit()
+	response2.SuccessResp(c).SetData(response2.CaptchaResponse{CaptchaId: id, PicPath: b64s}).WriteJsonExit()
 }
 
 func CaptchaVerify(c *gin.Context) {
 	id := c.PostForm("id")
 	capt := c.PostForm("capt")
 	if id == "" || capt == "" {
-		response.ErrorResp(c).SetMsg("请填写完整信息").WriteJsonExit()
+		response2.ErrorResp(c).SetMsg("请填写完整信息").WriteJsonExit()
 		return
 	}
 
 	if captcha.CaptVerify(id, capt) == true {
-		response.SuccessResp(c).WriteJsonExit()
+		response2.SuccessResp(c).WriteJsonExit()
 	} else {
-		response.ErrorResp(c).SetMsg("验证码有误，请重新输入").WriteJsonExit()
+		response2.ErrorResp(c).SetMsg("验证码有误，请重新输入").WriteJsonExit()
 	}
 	return
 }

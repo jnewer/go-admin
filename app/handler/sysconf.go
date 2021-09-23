@@ -4,12 +4,12 @@ import (
 	"github.com/cilidm/toolbox/gomail"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"pear-admin-go/app/global/api/request"
-	"pear-admin-go/app/global/api/response"
+	"pear-admin-go/app/core/cache"
+	"pear-admin-go/app/global/request"
+	"pear-admin-go/app/global/response"
 	"pear-admin-go/app/model"
 	"pear-admin-go/app/service"
 	"pear-admin-go/app/util/e"
-	"pear-admin-go/app/util/gocache"
 )
 
 func SiteList(c *gin.Context) {
@@ -70,7 +70,7 @@ func MailTest(c *gin.Context) {
 		return
 	}
 	// 保存邮件测试配置到缓存
-	gocache.Instance().Set(e.TestMailConf, model.MailTest{
+	cache.Instance().Set(e.TestMailConf, model.MailTest{
 		EmailTest:      f.EmailTest,
 		EmailTestTitle: f.EmailTestTitle,
 		EmailTemplate:  f.EmailTemplate,

@@ -5,12 +5,12 @@ import (
 	"github.com/cilidm/toolbox/gconv"
 	pkg "github.com/cilidm/toolbox/str"
 	"github.com/gin-gonic/gin"
+	"pear-admin-go/app/core/cache"
 	dao2 "pear-admin-go/app/dao"
 	"pear-admin-go/app/global"
-	"pear-admin-go/app/global/api/request"
+	"pear-admin-go/app/global/request"
 	"pear-admin-go/app/model"
 	"pear-admin-go/app/util/e"
-	"pear-admin-go/app/util/gocache"
 	"strings"
 )
 
@@ -144,10 +144,10 @@ func SaveRoleAuth(roleId, authIds string) (err error) {
 }
 
 func deleteMenuCache() {
-	items := gocache.Instance().Items()
+	items := cache.Instance().Items()
 	for k, _ := range items {
 		if strings.HasPrefix(k, e.MenuCache) {
-			gocache.Instance().Delete(k)
+			cache.Instance().Delete(k)
 		}
 	}
 }

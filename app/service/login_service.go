@@ -2,22 +2,21 @@ package service
 
 import (
 	"github.com/cilidm/toolbox/gconv"
+	"pear-admin-go/app/core/cache"
 	"pear-admin-go/app/util/e"
-	"pear-admin-go/app/util/gocache"
-
 	"time"
 )
 
 func Lock(loginName string) {
-	gocache.Instance().Set(e.UserLock+loginName, true, time.Minute*5)
+	cache.Instance().Set(e.UserLock+loginName, true, time.Minute*5)
 }
 
 func UnLock(loginName string) {
-	gocache.Instance().Delete(e.UserLock + loginName)
+	cache.Instance().Delete(e.UserLock + loginName)
 }
 
 func CheckLock(loginName string) bool {
-	res, ok := gocache.Instance().Get(e.UserLock + loginName)
+	res, ok := cache.Instance().Get(e.UserLock + loginName)
 	if ok && res == true {
 		return true
 	}
@@ -26,12 +25,12 @@ func CheckLock(loginName string) bool {
 
 func SetPwdErrNum(loginName string) int {
 	countNum := 0
-	errNum, _ := gocache.Instance().Get(e.UserLoginErr + loginName)
+	errNum, _ := cache.Instance().Get(e.UserLoginErr + loginName)
 	if errNum != nil {
 		countNum = gconv.Int(errNum)
 	}
 	countNum = countNum + 1
-	gocache.Instance().Set(e.UserLoginErr+loginName, countNum, time.Minute*1)
+	cache.Instance().Set(e.UserLoginErr+loginName, countNum, time.Minute*1)
 	if countNum >= 5 {
 		Lock(loginName)
 	}
@@ -39,5 +38,5 @@ func SetPwdErrNum(loginName string) int {
 }
 
 func RemovePwdErrNum(loginName string) {
-	gocache.Instance().Delete(e.UserLoginErr + loginName)
+	cache.Instance().Delete(e.UserLoginErr + loginName)
 }

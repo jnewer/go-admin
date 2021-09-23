@@ -9,7 +9,10 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"pear-admin-go/app/core"
+	"pear-admin-go/app/core/config"
+	"pear-admin-go/app/core/db"
+	log2 "pear-admin-go/app/core/log"
+	"pear-admin-go/app/core/redis"
 	"pear-admin-go/app/global"
 	"pear-admin-go/app/router"
 	"pear-admin-go/app/util/validate"
@@ -28,16 +31,16 @@ func main() {
 		fmt.Println("init trans failed, err:", err)
 	}
 
-	core.InitConfig("./config.toml")
+	config.InitConfig("./config.toml")
 
-	global.Log = core.InitLog()
+	global.Log = log2.InitLog()
 
-	global.DBConn = core.InitConn()
+	global.DBConn = db.InitConn()
 
-	core.InitRedis()
+	redis.InitRedis()
 	r := router.InitRouter(staticFs, templateFs)
 	s := &http.Server{
-		Addr:           fmt.Sprintf(":%d", core.Conf.App.HttpPort),
+		Addr:           fmt.Sprintf(":%d", config.Conf.App.HttpPort),
 		Handler:        r,
 		ReadTimeout:    30 * time.Second,
 		WriteTimeout:   30 * time.Second,
@@ -45,7 +48,7 @@ func main() {
 	}
 	fmt.Printf(`	欢迎使用 Pear Admin Go
 	程序运行地址:http://127.0.0.1:%s
-`, gconv.String(core.Conf.App.HttpPort))
+`, gconv.String(config.Conf.App.HttpPort))
 	go func() {
 		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			global.Log.Error(err.Error())

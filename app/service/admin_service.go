@@ -6,13 +6,13 @@ import (
 	"github.com/cilidm/toolbox/gconv"
 	pkg "github.com/cilidm/toolbox/str"
 	"github.com/gin-gonic/gin"
-	"pear-admin-go/app/core"
+	"pear-admin-go/app/core/cache"
+	"pear-admin-go/app/core/config"
 	"pear-admin-go/app/dao"
 	"pear-admin-go/app/global"
-	"pear-admin-go/app/global/api/request"
+	"pear-admin-go/app/global/request"
 	"pear-admin-go/app/model"
 	"pear-admin-go/app/util/e"
-	"pear-admin-go/app/util/gocache"
 	"pear-admin-go/app/util/session"
 	"strings"
 	"sync"
@@ -263,9 +263,9 @@ func SaveUserToSession(admin model.Admin, c *gin.Context) (string, error) {
 //清空用户菜单缓存
 func ClearMenuCache(user *model.Admin) {
 	if IsAdmin(user) {
-		gocache.Instance().Delete(e.Menu)
+		cache.Instance().Delete(e.Menu)
 	} else {
-		gocache.Instance().Delete(e.Menu + gconv.String(user.ID))
+		cache.Instance().Delete(e.Menu + gconv.String(user.ID))
 	}
 }
 
@@ -371,7 +371,7 @@ func ProfileEditService(f request.ProfileForm, c *gin.Context) error {
 }
 
 func GetImgSavePath(path string) string {
-	return strings.ReplaceAll(path, core.Conf.App.ImgUrlPath, core.Conf.App.ImgSavePath)
+	return strings.ReplaceAll(path, config.Conf.App.ImgUrlPath, config.Conf.App.ImgSavePath)
 }
 
 func GetLoginInfo() ([]model.LoginInfo, error) {

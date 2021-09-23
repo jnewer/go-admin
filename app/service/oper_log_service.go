@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	dao2 "pear-admin-go/app/dao"
 	"pear-admin-go/app/global"
-	"pear-admin-go/app/global/api/request"
+	"pear-admin-go/app/global/request"
 	"pear-admin-go/app/model"
 	"pear-admin-go/app/util/e"
 

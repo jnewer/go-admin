@@ -1,16 +1,17 @@
-package core
+package redis
 
 import (
 	"github.com/go-redis/redis"
 	"go.uber.org/zap"
+	"pear-admin-go/app/core/config"
 	"pear-admin-go/app/global"
 )
 
 func InitRedis() {
 	client := redis.NewClient(&redis.Options{
-		Addr:     Conf.Redis.RedisAddr,
-		Password: Conf.Redis.RedisPWD, // no password set
-		DB:       Conf.Redis.RedisDB,  // use default DB
+		Addr:     config.Conf.Redis.RedisAddr,
+		Password: config.Conf.Redis.RedisPWD, // no password set
+		DB:       config.Conf.Redis.RedisDB,  // use default DB
 	})
 	pong, err := client.Ping().Result()
 	if err != nil {

@@ -2,14 +2,14 @@ package zapLog
 
 import (
 	"go.uber.org/zap"
-	"pear-admin-go/app/core"
+	"pear-admin-go/app/core/log"
 	"pear-admin-go/app/global"
 )
 
 func NewLog() *ZapLog {
 	z := new(ZapLog)
 	if global.Log == nil {
-		core.InitLog()
+		log.InitLog()
 	}
 	z.log = global.Log
 	return z

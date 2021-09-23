@@ -1,80 +1,72 @@
 package router
 
 import (
+	"github.com/gin-gonic/gin"
 	controller "pear-admin-go/app/handler"
 	"pear-admin-go/app/middleware"
 )
 
-func SystemInit() {
-	common := New("system", "/")
-	common.GET("/", middleware.CheckDefaultPage)
-	common.GET("login", middleware.CheckLoginPage, controller.Login)
-	common.POST("login", controller.LoginHandler)
-	common.GET("logout", controller.Logout)
-	common.POST("isLogin", nil)
-	common.GET("not_found", controller.NotFound)
-	common.GET("captcha", controller.GetCaptcha)
-	common.POST("captcha_verify", controller.CaptchaVerify)
+func SystemRouter(r *gin.Engine) {
+	sr := r.Group("system", middleware.AuthMiddleware)
 
-	r := New("system", "/system", middleware.AuthMiddleware)
 	// index
-	r.GET("/", controller.Index)
-	r.GET("index", controller.Index)
-	r.GET("main", controller.FrameIndex)
+	sr.GET("/", controller.Index)
+	sr.GET("index", controller.Index)
+	sr.GET("main", controller.FrameIndex)
 
 	// log
-	r.GET("/log/list", controller.LogList)
-	r.GET("/log/log_operate", controller.LogOperate)
-	r.GET("/log/log_login", controller.LogLogin)
+	sr.GET("/log/list", controller.LogList)
+	sr.GET("/log/log_operate", controller.LogOperate)
+	sr.GET("/log/log_login", controller.LogLogin)
 
 	// default
-	r.POST("upload/def_upload", controller.DefaultUpload)
-	r.GET("pear_config", controller.PearConfig)
-	r.GET("menu_config", controller.GetMenu)
-	r.GET("server_err", controller.ServerErr)
-	r.GET("file", controller.ShowFile)
+	sr.POST("upload/def_upload", controller.DefaultUpload)
+	sr.GET("pear_config", controller.PearConfig)
+	sr.GET("menu_config", controller.GetMenu)
+	sr.GET("server_err", controller.ServerErr)
+	sr.GET("file", controller.ShowFile)
 
 	// role
-	r.GET("admin/list", controller.AdminList) // 管理员列表页
-	r.GET("admin/list_json", controller.AdminListJson)
-	r.GET("admin/add", controller.AdminAdd)
-	r.POST("admin/add", controller.AdminAddHandler)
-	r.GET("admin/edit", controller.AdminEdit)
-	r.POST("admin/edit", controller.AdminEditHandler)
-	r.POST("admin/edit_status", controller.AdminChangeStatus)
+	sr.GET("admin/list", controller.AdminList) // 管理员列表页
+	sr.GET("admin/list_json", controller.AdminListJson)
+	sr.GET("admin/add", controller.AdminAdd)
+	sr.POST("admin/add", controller.AdminAddHandler)
+	sr.GET("admin/edit", controller.AdminEdit)
+	sr.POST("admin/edit", controller.AdminEditHandler)
+	sr.POST("admin/edit_status", controller.AdminChangeStatus)
 	r.DELETE("admin/delete", controller.AdminDelete)
-	r.GET("role/list", controller.RoleList) // 角色管理列表页
-	r.GET("role/list_json", controller.RoleListJson)
-	r.GET("role/add", controller.RoleAdd)
-	r.POST("role/add", controller.RoleAddHandler)
-	r.GET("role/power", controller.RolePower)
-	r.GET("role/getRolePower", controller.GetRolePower)
-	r.POST("role/saveRolePower", controller.SaveRolePower)
-	r.GET("role/edit", controller.RoleEdit)
-	r.POST("role/edit", controller.RoleEditHandler)
-	r.POST("role/delete", controller.RoleDeleteHandler)
-	r.GET("auth/list", controller.AuthList)             // 权限因子列表页
-	r.POST("auth/edit", controller.AuthNodeEdit)        // 新增、修改权限
-	r.GET("auth/get_nodes", controller.GetNodes)        // 权限配置页面
-	r.GET("auth/add", controller.AddNode)               // 新增权限
-	r.GET("auth/edit", controller.EditNode)             // 修改权限
-	r.POST("auth/get_node", controller.GetNode)         // 权限因子列表页
-	r.POST("auth/delete", controller.AuthDelete)        // 权限因子列表页
-	r.GET("auth/selectParent", controller.SelectParent) // 权限列表
-	r.GET("ui/icon", controller.IconShow)
+	sr.GET("role/list", controller.RoleList) // 角色管理列表页
+	sr.GET("role/list_json", controller.RoleListJson)
+	sr.GET("role/add", controller.RoleAdd)
+	sr.POST("role/add", controller.RoleAddHandler)
+	sr.GET("role/power", controller.RolePower)
+	sr.GET("role/getRolePower", controller.GetRolePower)
+	sr.POST("role/saveRolePower", controller.SaveRolePower)
+	sr.GET("role/edit", controller.RoleEdit)
+	sr.POST("role/edit", controller.RoleEditHandler)
+	sr.POST("role/delete", controller.RoleDeleteHandler)
+	sr.GET("auth/list", controller.AuthList)             // 权限因子列表页
+	sr.POST("auth/edit", controller.AuthNodeEdit)        // 新增、修改权限
+	sr.GET("auth/get_nodes", controller.GetNodes)        // 权限配置页面
+	sr.GET("auth/add", controller.AddNode)               // 新增权限
+	sr.GET("auth/edit", controller.EditNode)             // 修改权限
+	sr.POST("auth/get_node", controller.GetNode)         // 权限因子列表页
+	sr.POST("auth/delete", controller.AuthDelete)        // 权限因子列表页
+	sr.GET("auth/selectParent", controller.SelectParent) // 权限列表
+	sr.GET("ui/icon", controller.IconShow)
 
 	// sysconf
-	r.GET("site/list", controller.SiteList)
-	r.POST("site/edit", controller.SiteEdit)
-	r.GET("mail/list", controller.MailList)
-	r.POST("mail/edit", controller.MailEdit)
-	r.POST("mail/test", controller.MailTest)
+	sr.GET("site/list", controller.SiteList)
+	sr.POST("site/edit", controller.SiteEdit)
+	sr.GET("mail/list", controller.MailList)
+	sr.POST("mail/edit", controller.MailEdit)
+	sr.POST("mail/test", controller.MailTest)
 
 	// user
-	r.GET("user/edit", controller.UserShow)
-	r.GET("user/uploadPage", controller.UploadPage)
-	r.POST("user/edit", controller.ProfileEdit)
-	r.POST("user/avatar", controller.AvatarEdit)
-	r.GET("user/pwd", controller.PwdEdit)
-	r.POST("user/pwd", controller.PwdEditHandler)
+	sr.GET("user/edit", controller.UserShow)
+	sr.GET("user/uploadPage", controller.UploadPage)
+	sr.POST("user/edit", controller.ProfileEdit)
+	sr.POST("user/avatar", controller.AvatarEdit)
+	sr.GET("user/pwd", controller.PwdEdit)
+	sr.POST("user/pwd", controller.PwdEditHandler)
 }

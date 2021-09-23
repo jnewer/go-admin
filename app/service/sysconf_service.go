@@ -3,11 +3,11 @@ package service
 import (
 	"encoding/json"
 	"github.com/cilidm/toolbox/gconv"
+	"pear-admin-go/app/core/cache"
 	dao2 "pear-admin-go/app/dao"
-	"pear-admin-go/app/global/api/request"
+	"pear-admin-go/app/global/request"
 	"pear-admin-go/app/model"
 	"pear-admin-go/app/util/e"
-	"pear-admin-go/app/util/gocache"
 	"strings"
 	"time"
 )
@@ -76,7 +76,7 @@ func MailEditService(f request.MailConfForm) error {
 }
 
 func GetMailTestConf() (testMail model.MailTest) {
-	mail, has := gocache.Instance().Get(e.TestMailConf)
+	mail, has := cache.Instance().Get(e.TestMailConf)
 	if has {
 		testMail = mail.(model.MailTest)
 	}

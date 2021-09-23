@@ -1,4 +1,4 @@
-package gocache
+package cache
 
 import (
 	"github.com/patrickmn/go-cache"
@@ -7,13 +7,13 @@ import (
 )
 
 var (
-	cae  *cache.Cache
+	ca   *cache.Cache
 	once sync.Once
 )
 
 func Instance() *cache.Cache {
 	once.Do(func() {
-		cae = cache.New(1*time.Minute, 3*time.Minute)
+		ca = cache.New(1*time.Minute, 3*time.Minute)
 	})
-	return cae
+	return ca
 }

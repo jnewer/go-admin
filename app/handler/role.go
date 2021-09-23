@@ -5,13 +5,13 @@ import (
 	pkg "github.com/cilidm/toolbox/str"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"pear-admin-go/app/core/cache"
 	dao2 "pear-admin-go/app/dao"
-	"pear-admin-go/app/global/api/request"
-	"pear-admin-go/app/global/api/response"
+	"pear-admin-go/app/global/request"
+	"pear-admin-go/app/global/response"
 	"pear-admin-go/app/model"
 	"pear-admin-go/app/service"
 	"pear-admin-go/app/util/e"
-	"pear-admin-go/app/util/gocache"
 	"pear-admin-go/app/util/validate"
 	"strconv"
 )
@@ -255,14 +255,14 @@ func AuthNodeEdit(c *gin.Context) {
 			response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperOther).Log(e.AuthNodeAdd, req).WriteJsonExit()
 			return
 		}
-		gocache.Instance().Delete(e.MenuCache + gconv.String(service.GetUid(c))) // 删除栏目列表缓存，重新进行设置
+		cache.Instance().Delete(e.MenuCache + gconv.String(service.GetUid(c))) // 删除栏目列表缓存，重新进行设置
 		response.SuccessResp(c).SetType(model.OperEdit).Log(e.AuthNodeAdd, req).WriteJsonExit()
 	} else {
 		if err := service.AuthUpdate(req); err != nil {
 			response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperOther).Log(e.AuthNodeEdit, req).WriteJsonExit()
 			return
 		}
-		gocache.Instance().Delete(e.MenuCache + gconv.String(service.GetUid(c))) // 删除栏目列表缓存，重新进行设置
+		cache.Instance().Delete(e.MenuCache + gconv.String(service.GetUid(c))) // 删除栏目列表缓存，重新进行设置
 		response.SuccessResp(c).SetType(model.OperEdit).Log(e.AuthNodeEdit, req).WriteJsonExit()
 	}
 }
@@ -273,7 +273,7 @@ func AuthDelete(c *gin.Context) {
 		response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperOther).Log(e.AuthDelete, c.Request.PostForm).WriteJsonExit()
 		return
 	}
-	gocache.Instance().Delete(e.MenuCache + gconv.String(service.GetUid(c))) // 删除栏目列表缓存，重新进行设置
+	cache.Instance().Delete(e.MenuCache + gconv.String(service.GetUid(c))) // 删除栏目列表缓存，重新进行设置
 	response.SuccessResp(c).SetType(model.OperOther).Log(e.AuthDelete, c.Request.PostForm).WriteJsonExit()
 }
 

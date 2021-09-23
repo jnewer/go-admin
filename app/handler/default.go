@@ -8,12 +8,12 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"pear-admin-go/app/core"
-	"pear-admin-go/app/global/api/response"
+	"pear-admin-go/app/core/cache"
+	"pear-admin-go/app/core/config"
+	"pear-admin-go/app/global/response"
 	"pear-admin-go/app/model"
 	"pear-admin-go/app/service"
 	"pear-admin-go/app/util/e"
-	"pear-admin-go/app/util/gocache"
 	"strings"
 	"time"
 )
@@ -29,7 +29,7 @@ func DefaultUpload(c *gin.Context) {
 		return
 	}
 	day := time.Now().Format(e.TimeFormatDay)
-	savePath := filepath.Join(core.Conf.App.ImgSavePath, day) // 按年月日归档保存
+	savePath := filepath.Join(config.Conf.App.ImgSavePath, day) // 按年月日归档保存
 	err = f.IsNotExistMkDir(savePath)
 	if err != nil {
 		response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperAdd).Log(e.DefaultUpload, file).WriteJsonExit()
@@ -39,7 +39,7 @@ func DefaultUpload(c *gin.Context) {
 		response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperAdd).Log(e.DefaultUpload, file).WriteJsonExit()
 		return
 	}
-	backFilePath := filepath.Join(filepath.Join(core.Conf.App.ImgUrlPath, day), file.Filename)
+	backFilePath := filepath.Join(filepath.Join(config.Conf.App.ImgUrlPath, day), file.Filename)
 	if OS.IsWindows() {
 		backFilePath = strings.ReplaceAll(backFilePath, "\\", "/")
 	}
@@ -51,7 +51,7 @@ func PearConfig(c *gin.Context) {
 		data *model.PearConfigForm
 		err  error
 	)
-	conf, found := gocache.Instance().Get(e.PearConfigCache)
+	conf, found := cache.Instance().Get(e.PearConfigCache)
 	if found && conf != nil {
 		d, ok := conf.(model.PearConfigForm)
 		if ok {

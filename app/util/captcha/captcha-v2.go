@@ -6,7 +6,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"pear-admin-go/app/global/api/response"
+	"pear-admin-go/app/global/response"
 	"pear-admin-go/app/util/e"
 	"time"
 )

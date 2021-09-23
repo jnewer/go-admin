@@ -3,7 +3,7 @@ package service
 import (
 	dao2 "pear-admin-go/app/dao"
 	"pear-admin-go/app/global"
-	"pear-admin-go/app/global/api/request"
+	"pear-admin-go/app/global/request"
 	"pear-admin-go/app/model"
 )
 

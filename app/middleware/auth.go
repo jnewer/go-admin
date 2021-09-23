@@ -5,9 +5,9 @@ import (
 	pkg "github.com/cilidm/toolbox/str"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"pear-admin-go/app/core/cache"
 	"pear-admin-go/app/service"
 	"pear-admin-go/app/util/e"
-	"pear-admin-go/app/util/gocache"
 	"strings"
 )
 
@@ -44,7 +44,7 @@ func AuthByPage(c *gin.Context) bool {
 	}
 
 	var allowUrlArr []string
-	menuCache, found := gocache.Instance().Get(e.MenuCache + gconv.String(user.ID))
+	menuCache, found := cache.Instance().Get(e.MenuCache + gconv.String(user.ID))
 	if found && menuCache != nil { //从缓存取菜单
 		menu := menuCache.(service.CacheMenuV2)
 		allowUrlArr = strings.Split(menu.AllowUrl, ",")

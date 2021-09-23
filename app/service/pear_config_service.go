@@ -2,10 +2,10 @@ package service
 
 import (
 	"encoding/json"
+	"pear-admin-go/app/core/cache"
 	"pear-admin-go/app/dao"
 	"pear-admin-go/app/model"
 	"pear-admin-go/app/util/e"
-	"pear-admin-go/app/util/gocache"
 )
 
 func GetPearConfig() (*model.PearConfigForm, error) {
@@ -18,6 +18,6 @@ func GetPearConfig() (*model.PearConfigForm, error) {
 	if err != nil {
 		return nil, err
 	}
-	gocache.Instance().Set(e.PearConfigCache, data, 0)
+	cache.Instance().Set(e.PearConfigCache, data, 0)
 	return &data, nil
 }
