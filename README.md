@@ -45,7 +45,13 @@ cp config.toml.example config.toml
 #### 运行项目
 
 ```bash
-
-
+go mod tidy
 go run main.go
 ```
+
+#### 未完成工作
+- [ ] 修改路由结构
+- [ ] 修改配置方式
+- [ ] 去除多余函数
+- [ ] 优化文件层级
+- [ ] 增加其他功能
