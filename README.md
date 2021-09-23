@@ -48,6 +48,7 @@ cp config.toml.example config.toml
 go mod tidy
 go run main.go
 ```
+#### 备注: 因数据库使用sqlite3，使用及编译时需要gcc。如果不希望额外配置gcc，可以使用发行版。 
 
 #### 未完成工作
 - [ ] 修改路由结构
