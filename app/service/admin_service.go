@@ -392,8 +392,11 @@ func GetImgSavePath(path string) string {
 	return strings.ReplaceAll(path, config.Conf.App.ImgUrlPath, config.Conf.App.ImgSavePath)
 }
 
-func GetLoginInfo() ([]model.LoginInfo, error) {
-	info, _, err := dao.NewLoginInfoImpl().FindByPage(1, 5)
+func GetLoginInfo(c *gin.Context) ([]model.LoginInfo, error) {
+	user := GetProfile(c)
+	filters := make([]interface{}, 0)
+	filters = append(filters, "login_name = ?", user.LoginName)
+	info, _, err := dao.NewLoginInfoImpl().FindByPage(1, 5, filters...)
 	if err != nil {
 		return nil, err
 	}

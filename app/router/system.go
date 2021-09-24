@@ -7,14 +7,18 @@ import (
 )
 
 func SystemRouter(r *gin.Engine) {
-	sr := r.Group("system", middleware.AuthMiddleware)
+	sr := r.Group("system")
 
 	// default
 	sr.GET("pear", controller.Pear)
 	sr.GET("menu", controller.Menu)
 	sr.GET("server_err", controller.ServerErr)
-	sr.GET("file", controller.ShowFile)
 	sr.GET("ui/icon", controller.IconShow)
+	sr.GET("file", controller.ShowFile)
+
+	sr.Use(middleware.AuthMiddleware) // 下面的使用中间件验证  上面的路由为基础路由 不需要验证权限
+
+	// default
 	sr.POST("upload", controller.Upload)
 
 	// index

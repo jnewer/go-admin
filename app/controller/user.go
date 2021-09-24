@@ -17,7 +17,7 @@ func UserEdit(c *gin.Context) {
 		if pro.Avatar == "" {
 			pro.Avatar = e.DefaultAvatar
 		}
-		info, _ := service.GetLoginInfo()
+		info, _ := service.GetLoginInfo(c)
 		c.HTML(http.StatusOK, "user_show.html", gin.H{"user": pro, "info": info})
 	} else {
 		var pro request.ProfileForm
