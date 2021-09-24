@@ -6,6 +6,7 @@ import (
 	"github.com/cilidm/toolbox/gconv"
 	pkg "github.com/cilidm/toolbox/str"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 	"pear-admin-go/app/core/cache"
 	"pear-admin-go/app/core/config"
 	"pear-admin-go/app/dao"
@@ -49,6 +50,7 @@ func AdminListJsonService(f request.AdminForm) (count int, data []map[string]int
 	filters := BuildFilter(f)
 	list, count, err := dao.NewAdminDaoImpl().FindByPage(f.Page, f.Limit, filters...)
 	if err != nil {
+		global.Log.Error("AdminListJsonService.FindByPage", zap.Error(err))
 		return count, data, err
 	}
 	for _, v := range list {
@@ -89,6 +91,7 @@ func CreateAdminService(r request.AdminAddForm, uid int) error {
 		LastLogin: time.Now().Format(e.TimeFormat),
 	})
 	if err != nil {
+		global.Log.Error("CreateAdminService.Insert", zap.Error(err))
 		return err
 	}
 	return nil
@@ -99,6 +102,7 @@ func UpdateAdminStatus(id, status string) error {
 	attr["status"] = status
 	admin, err := dao.NewAdminDaoImpl().FindAdmin("id = ?", id)
 	if err != nil {
+		global.Log.Error("UpdateAdminStatus.FindAdmin", zap.Error(err))
 		return err
 	}
 	if admin.ID < 1 {
@@ -126,23 +130,34 @@ func UpdateAdminAttrService(f request.AdminEditForm) error {
 	}
 	admin, err := dao.NewAdminDaoImpl().FindAdmin("id = ?", f.ID)
 	if err != nil {
+		global.Log.Error("UpdateAdminAttrService.FindAdmin", zap.Error(err))
 		return err
 	}
 	if admin.ID < 1 {
 		return errors.New("未找到用户")
 	}
 	err = dao.NewAdminDaoImpl().Update(admin, attr)
-	return err
+	if err != nil {
+		global.Log.Error("UpdateAdminAttrService.Update", zap.Error(err))
+		return err
+	}
+	return nil
 }
 
 func AdminEditService(uid string) (show model.AdminShow, rolesShow []model.RoleEditShow, err error) {
 	admin, err := dao.NewAdminDaoImpl().FindAdmin("id = ?", uid)
 	if err != nil {
+		global.Log.Error("AdminEditService.FindAdmin", zap.Error(err))
 		return show, rolesShow, err
 	}
-	pkg.CopyFields(&show, admin)
+	err = pkg.CopyFields(&show, admin)
+	if err != nil {
+		global.Log.Error("AdminEditService.CopyFields", zap.Error(err))
+		return show, rolesShow, err
+	}
 	roles, err := dao.NewRoleDaoImpl().FindRoles("status = ?", "1") // 查找全部的分组
 	if err != nil {
+		global.Log.Error("AdminEditService.FindRoles", zap.Error(err))
 		return show, rolesShow, err
 	}
 	check := strings.Split(admin.RoleIds, ",")
@@ -168,6 +183,7 @@ func AdminAddHandlerService(roleIds, status string, f request.AdminAddForm, c *g
 	f.RoleIds = roleIds
 	f.Status = gconv.Int(status)
 	if err := CreateAdminService(f, GetUid(c)); err != nil {
+		global.Log.Error("AdminAddHandlerService.CreateAdminService", zap.Error(err))
 		return err
 	}
 	return nil
@@ -176,16 +192,18 @@ func AdminAddHandlerService(roleIds, status string, f request.AdminAddForm, c *g
 func AdminDeleteService(uid string, c *gin.Context) error {
 	admin, err := dao.NewAdminDaoImpl().FindAdmin("id = ?", uid)
 	if err != nil {
+		global.Log.Error("AdminDeleteService.FindAdmin", zap.Error(err))
 		return err
 	}
 	if admin.ID == 1 || admin.Level == 99 {
-		return err
+		return errors.New("超级管理员不能删除")
 	}
 	userId := GetUid(c)
 	if admin.ID == gconv.Uint(userId) {
-		return err
+		return errors.New("不能删除本人账号")
 	}
 	if err := dao.NewAdminDaoImpl().Delete(gconv.Int(uid)); err != nil {
+		global.Log.Error("AdminDeleteService.Delete", zap.Error(err))
 		return err
 	}
 	return nil
@@ -374,8 +392,11 @@ func GetImgSavePath(path string) string {
 	return strings.ReplaceAll(path, config.Conf.App.ImgUrlPath, config.Conf.App.ImgSavePath)
 }
 
-func GetLoginInfo() ([]model.LoginInfo, error) {
-	info, _, err := dao.NewLoginInfoImpl().FindByPage(1, 5)
+func GetLoginInfo(c *gin.Context) ([]model.LoginInfo, error) {
+	user := GetProfile(c)
+	filters := make([]interface{}, 0)
+	filters = append(filters, "login_name = ?", user.LoginName)
+	info, _, err := dao.NewLoginInfoImpl().FindByPage(1, 5, filters...)
 	if err != nil {
 		return nil, err
 	}

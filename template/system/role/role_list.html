@@ -84,7 +84,7 @@
             });
             table.render({
                 elem: '#role-table',
-                url: '/system/role/list_json',
+                url: '/system/role/json',
                 page: true,
                 cols: [
                     [{
@@ -156,7 +156,7 @@
                     status = 1
                 }
                 $.ajax({
-                    url: "/system/admin/edit_status",
+                    url: "/system/admin/status",
                     type: "POST",
                     data: {id:this.value,status:status},
                     dataType:'json',
