@@ -4,7 +4,7 @@
 		"image": "/static/admin/images/logo.png"
 	},
 	"menu": {
-		"data": "/system/menu_config",
+		"data": "/system/menu",
 		"accordion": true,
 		"method": "GET",
 		"control": false,

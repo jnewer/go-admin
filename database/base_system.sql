@@ -23,17 +23,17 @@ VALUES
     (15, '个人中心', 'profile/edit', 1, 0, 4, 'layui-icon layui-icon-user', 1, 1, 0, 0, 1, '2020-10-14 17:04:30', '2020-10-14 17:04:30'),
     (20, '基础设置', '/', 1, 0, 2, 'layui-icon layui-icon-auz', 1, 1, 0, 1, 1, '2020-10-14 17:04:30', '2020-10-14 17:04:30'),
     (24, '资料修改', '/system/user/edit', 1, 15, 1, 'fa-edit', 1, 1, 1, 0, 1, '2020-10-14 17:04:30', '2020-10-14 17:04:30'),
-    (45, '权限树', '/system/auth/get_nodes', 0, 11, 4, '', 0, 1, 2, 0, 0, '2020-10-14 17:04:30', '2020-10-14 17:04:30'),
-    (46, '单个权限获取', '/system/auth/get_node', 0, 11, 5, '', 0, 1, 2, 0, 0, '2020-10-14 17:04:30', '2020-10-14 17:04:30'),
-    (47, '管理员列表', '/system/admin/list_json', 0, 3, 4, '', 0, 1, 2, 0, 0, '2020-10-14 17:04:30', '2020-10-14 17:04:30'),
-    (48, '角色列表', '/system/role/list_json', 0, 4, 4, '', 0, 1, 2, 0, 0, '2020-10-14 17:04:30', '2020-10-14 17:04:30'),
-    (49, '站点设置', '/system/site/list', 0, 20, 1, 'layui-icon layui-icon-home', 1, 1, 1, 0, 0, '2020-10-14 17:04:30', '2020-10-14 17:04:30'),
-    (50, '上传图片', '/system/upload/def_upload', 0, 49, 1, '', 0, 1, 2, 0, 0, '2020-10-14 17:04:30', '2020-10-14 17:04:30'),
+    (45, '权限树', '/system/auth/nodes', 0, 11, 4, '', 0, 1, 2, 0, 0, '2020-10-14 17:04:30', '2020-10-14 17:04:30'),
+    (46, '单个权限获取', '/system/auth/node', 0, 11, 5, '', 0, 1, 2, 0, 0, '2020-10-14 17:04:30', '2020-10-14 17:04:30'),
+    (47, '管理员列表', '/system/admin/json', 0, 3, 4, '', 0, 1, 2, 0, 0, '2020-10-14 17:04:30', '2020-10-14 17:04:30'),
+    (48, '角色列表', '/system/role/json', 0, 4, 4, '', 0, 1, 2, 0, 0, '2020-10-14 17:04:30', '2020-10-14 17:04:30'),
+    (49, '站点设置', '/system/site/edit', 0, 20, 1, 'layui-icon layui-icon-home', 1, 1, 1, 0, 0, '2020-10-14 17:04:30', '2020-10-14 17:04:30'),
+    (50, '上传图片', '/system/upload', 0, 49, 1, '', 0, 1, 2, 0, 0, '2020-10-14 17:04:30', '2020-10-14 17:04:30'),
     (51, '更新站点设置', '/system/site/edit', 0, 49, 2, '', 0, 1, 2, 0, 0, '2020-10-14 17:04:30', '2020-10-14 17:04:30'),
     (55, '更新头像', '/system/user/avatar', 0, 24, 2, '', 0, 1, 2, 0, 0, '2020-10-14 17:04:30', '2020-10-14 17:04:30'),
     (56, '修改密码', '/system/user/pwd', 0, 15, 2, '', 1, 1, 2, 0, 0, '2020-10-14 17:04:30', '2020-10-14 17:04:30'),
-    (57, 'pear-config', '/system/pear_config', 1, 49, 2, 'layui-icon ', 0, 1, 2, 1, 0, '2021-05-06 17:32:06', '2021-05-06 17:32:08'),
-    (58, 'menu_config', '/system/menu_config', 1, 49, 3, 'layui-icon ', 0, 1, 2, 1, 0, '2021-05-06 17:32:40', '2021-05-06 17:32:43'),
+    (57, '前端配置', '/system/pear', 1, 49, 2, 'layui-icon ', 0, 1, 2, 1, 0, '2021-05-06 17:32:06', '2021-05-06 17:32:08'),
+    (58, '菜单列表', '/system/menu', 1, 49, 3, 'layui-icon ', 0, 1, 2, 1, 0, '2021-05-06 17:32:40', '2021-05-06 17:32:43'),
     (59, '工作空间', '/', 0, 0, 1, 'layui-icon layui-icon-console', 1, 1, 0, 0, 0, '2021-05-21 15:16:44', '2021-05-21 15:16:44'),
     (60, '后台首页', '/system/main', 0, 59, 1, 'layui-icon layui-icon-rate', 1, 1, 1, 0, 0, '2021-05-21 15:22:36', '2021-05-21 15:22:36');
 
@@ -63,4 +63,4 @@ VALUES
 -- name: create-pear-config
 INSERT INTO `pear_config`(`id`, `created_at`, `updated_at`, `config_type`, `config_data`, `config_status`)
 VALUES 
-    (1, '2021-05-28 10:48:35', '2021-05-28 10:48:35', 'pear-config', '{"colors":[{"color":"#2d8cf0","id":"1"},{"color":"#5FB878","id":"2"},{"color":"#1E9FFF","id":"3"},{"color":"#FFB800","id":"4"},{"color":"darkgray","id":"5"}],"header":{"message":"/static/admin/data/message.json"},"links":[{"href":"http://www.pearadmin.com","icon":"layui-icon layui-icon-auz","title":"官方网站"},{"href":"http://www.pearadmin.com","icon":"layui-icon layui-icon-auz","title":"开发文档"},{"href":"https://gitee.com/Jmysy/Pear-Admin-Layui","icon":"layui-icon layui-icon-auz","title":"开源地址"}],"logo":{"image":"/static/admin/images/logo.png","title":"Pear Admin"},"menu":{"accordion":true,"control":false,"data":"/system/menu_config","method":"GET","select":"60"},"other":{"autoHead":false,"keepLoad":100},"tab":{"index":{"href":"/system/main","id":"60","title":"首页"},"keepState":true,"muiltTab":true,"tabMax":30},"theme":{"allowCustom":true,"defaultColor":"2","defaultMenu":"dark-theme"}}', 1);
+    (1, '2021-05-28 10:48:35', '2021-05-28 10:48:35', 'pear-config', '{"colors":[{"color":"#2d8cf0","id":"1"},{"color":"#5FB878","id":"2"},{"color":"#1E9FFF","id":"3"},{"color":"#FFB800","id":"4"},{"color":"darkgray","id":"5"}],"header":{"message":"/static/admin/data/message.json"},"links":[{"href":"http://www.pearadmin.com","icon":"layui-icon layui-icon-auz","title":"官方网站"},{"href":"http://www.pearadmin.com","icon":"layui-icon layui-icon-auz","title":"开发文档"},{"href":"https://gitee.com/Jmysy/Pear-Admin-Layui","icon":"layui-icon layui-icon-auz","title":"开源地址"}],"logo":{"image":"/static/admin/images/logo.png","title":"Pear Admin"},"menu":{"accordion":true,"control":false,"data":"/system/menu","method":"GET","select":"60"},"other":{"autoHead":false,"keepLoad":100},"tab":{"index":{"href":"/system/main","id":"60","title":"首页"},"keepState":true,"muiltTab":true,"tabMax":30},"theme":{"allowCustom":true,"defaultColor":"2","defaultMenu":"dark-theme"}}', 1);

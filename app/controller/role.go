@@ -21,42 +21,42 @@ func IconShow(c *gin.Context) {
 }
 
 func AdminAdd(c *gin.Context) {
-	var rolesShow []model.RoleEditShow
-	roles, err := dao2.NewRoleDaoImpl().FindRoles("status = ?", "1") // 查找全部的分组
-	if err != nil {
-		c.String(http.StatusOK, err.Error())
+	if c.Request.Method == "GET" {
+		var rolesShow []model.RoleEditShow
+		roles, err := dao2.NewRoleDaoImpl().FindRoles("status = ?", "1") // 查找全部的分组
+		if err != nil {
+			c.String(http.StatusOK, err.Error())
+			return
+		}
+		for _, v := range roles {
+			rolesShow = append(rolesShow, model.RoleEditShow{
+				ID:       gconv.Int(v.ID),
+				RoleName: v.RoleName,
+				Status:   v.Status,
+			})
+		}
+		c.HTML(http.StatusOK, "admin_add.html", gin.H{"role": rolesShow})
+	} else {
+		roles := c.PostFormArray("role_ids")
+		roleIds := pkg.Array2Str(roles)
+		status := c.PostForm("status")
+		if status == "" {
+			status = "0"
+		} else if status == "on" {
+			status = "1"
+		}
+		var f request.AdminAddForm
+		if err := c.ShouldBind(&f); err != nil {
+			response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperAdd).Log(e.AdminAddHandler, gin.H{"form": c.Request.PostForm}).WriteJsonExit()
+			return
+		}
+		if err := service.AdminAddHandlerService(roleIds, status, f, c); err != nil {
+			response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperAdd).Log(e.AdminAddHandler, gin.H{"form": c.Request.PostForm}).WriteJsonExit()
+			return
+		}
+		response.SuccessResp(c).SetMsg("创建成功!").SetType(model.OperAdd).Log(e.AdminAddHandler, gin.H{"form": c.Request.PostForm}).WriteJsonExit()
 		return
 	}
-	for _, v := range roles {
-		rolesShow = append(rolesShow, model.RoleEditShow{
-			ID:       gconv.Int(v.ID),
-			RoleName: v.RoleName,
-			Status:   v.Status,
-		})
-	}
-	c.HTML(http.StatusOK, "admin_add.html", gin.H{"role": rolesShow})
-}
-
-func AdminAddHandler(c *gin.Context) {
-	roles := c.PostFormArray("role_ids")
-	roleIds := pkg.Array2Str(roles)
-	status := c.PostForm("status")
-	if status == "" {
-		status = "0"
-	} else if status == "on" {
-		status = "1"
-	}
-	var f request.AdminAddForm
-	if err := c.ShouldBind(&f); err != nil {
-		response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperAdd).Log(e.AdminAddHandler, gin.H{"form": c.Request.PostForm}).WriteJsonExit()
-		return
-	}
-	if err := service.AdminAddHandlerService(roleIds, status, f, c); err != nil {
-		response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperAdd).Log(e.AdminAddHandler, gin.H{"form": c.Request.PostForm}).WriteJsonExit()
-		return
-	}
-	response.SuccessResp(c).SetMsg("创建成功!").SetType(model.OperAdd).Log(e.AdminAddHandler, gin.H{"form": c.Request.PostForm}).WriteJsonExit()
-	return
 }
 
 func AdminList(c *gin.Context) {
@@ -64,20 +64,44 @@ func AdminList(c *gin.Context) {
 }
 
 func AdminEdit(c *gin.Context) {
-	uid := c.Query("id")
-	if uid == "" {
-		c.String(http.StatusOK, "请检查参数")
+	if c.Request.Method == "GET" {
+		uid := c.Query("id")
+		if uid == "" {
+			c.String(http.StatusOK, "请检查参数")
+			return
+		}
+		show, rolesShow, err := service.AdminEditService(uid)
+		if err != nil {
+			c.String(http.StatusOK, err.Error())
+			return
+		}
+		c.HTML(http.StatusOK, "admin_edit.html", gin.H{"show": show, "role": rolesShow})
+	} else {
+		roles := c.PostFormArray("role_ids")
+		roleIds := pkg.Array2Str(roles)
+		status := c.PostForm("status")
+		if status == "" {
+			status = "0"
+		} else if status == "on" {
+			status = "1"
+		}
+		var f request.AdminEditForm
+		if err := c.ShouldBind(&f); err != nil {
+			response.ErrorResp(c).SetMsg(validate.GetValidateError(err)).SetType(model.OperEdit).Log(e.AdminEditHandler, gin.H{"form": c.Request.PostForm}).WriteJsonExit()
+			return
+		}
+		f.RoleIds = roleIds
+		f.Status = gconv.Int(status)
+		if err := service.UpdateAdminAttrService(f); err != nil {
+			response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperEdit).Log(e.AdminEditHandler, gin.H{"form": c.Request.PostForm}).WriteJsonExit()
+			return
+		}
+		response.SuccessResp(c).SetMsg("更新成功").SetType(model.OperEdit).Log(e.AdminEditHandler, gin.H{"form": c.Request.PostForm}).WriteJsonExit()
 		return
 	}
-	show, rolesShow, err := service.AdminEditService(uid)
-	if err != nil {
-		c.String(http.StatusOK, err.Error())
-		return
-	}
-	c.HTML(http.StatusOK, "admin_edit.html", gin.H{"show": show, "role": rolesShow})
 }
 
-func AdminChangeStatus(c *gin.Context) {
+func AdminStatus(c *gin.Context) {
 	user := service.GetProfile(c)
 	if service.IsAdmin(user) == false {
 		response.ErrorResp(c).SetMsg("权限不足，无法修改").SetType(model.OperEdit).Log(e.AdminEditHandler, gin.H{"form": c.Request.Form}).WriteJsonExit()
@@ -98,31 +122,7 @@ func AdminChangeStatus(c *gin.Context) {
 	return
 }
 
-func AdminEditHandler(c *gin.Context) {
-	roles := c.PostFormArray("role_ids")
-	roleIds := pkg.Array2Str(roles)
-	status := c.PostForm("status")
-	if status == "" {
-		status = "0"
-	} else if status == "on" {
-		status = "1"
-	}
-	var f request.AdminEditForm
-	if err := c.ShouldBind(&f); err != nil {
-		response.ErrorResp(c).SetMsg(validate.GetValidateError(err)).SetType(model.OperEdit).Log(e.AdminEditHandler, gin.H{"form": c.Request.PostForm}).WriteJsonExit()
-		return
-	}
-	f.RoleIds = roleIds
-	f.Status = gconv.Int(status)
-	if err := service.UpdateAdminAttrService(f); err != nil {
-		response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperEdit).Log(e.AdminEditHandler, gin.H{"form": c.Request.PostForm}).WriteJsonExit()
-		return
-	}
-	response.SuccessResp(c).SetMsg("更新成功").SetType(model.OperEdit).Log(e.AdminEditHandler, gin.H{"form": c.Request.PostForm}).WriteJsonExit()
-	return
-}
-
-func AdminListJson(c *gin.Context) {
+func AdminJson(c *gin.Context) {
 	var f request.AdminForm
 	if err := c.ShouldBind(&f); err != nil {
 		response.SuccessResp(c).SetCode(0).SetMsg(err.Error()).WriteJsonExit()
@@ -152,7 +152,7 @@ func RoleList(c *gin.Context) {
 	c.HTML(http.StatusOK, "role_list.html", gin.H{})
 }
 
-func RoleListJson(c *gin.Context) {
+func RoleJson(c *gin.Context) {
 	var f request.RoleForm
 	if err := c.ShouldBind(&f); err != nil {
 		response.SuccessResp(c).SetCode(0).SetMsg(err.Error()).WriteJsonExit()
@@ -167,20 +167,20 @@ func RoleListJson(c *gin.Context) {
 }
 
 func RoleAdd(c *gin.Context) {
-	c.HTML(http.StatusOK, "role_add.html", gin.H{})
-}
-
-func RoleAddHandler(c *gin.Context) {
-	var f request.RoleAddForm
-	if err := c.ShouldBind(&f); err != nil {
-		response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperAdd).Log(e.RoleAddHandler, c.Request.PostForm).WriteJsonExit()
-		return
+	if c.Request.Method == "GET" {
+		c.HTML(http.StatusOK, "role_add.html", gin.H{})
+	} else {
+		var f request.RoleAddForm
+		if err := c.ShouldBind(&f); err != nil {
+			response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperAdd).Log(e.RoleAddHandler, c.Request.PostForm).WriteJsonExit()
+			return
+		}
+		if err := service.RoleAddHandlerService(f, c); err != nil {
+			response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperAdd).Log(e.RoleAddHandler, c.Request.PostForm).WriteJsonExit()
+			return
+		}
+		response.SuccessResp(c).SetType(model.OperAdd).Log(e.RoleAddHandler, c.Request.PostForm).WriteJsonExit()
 	}
-	if err := service.RoleAddHandlerService(f, c); err != nil {
-		response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperAdd).Log(e.RoleAddHandler, c.Request.PostForm).WriteJsonExit()
-		return
-	}
-	response.SuccessResp(c).SetType(model.OperAdd).Log(e.RoleAddHandler, c.Request.PostForm).WriteJsonExit()
 }
 
 func RolePower(c *gin.Context) {
@@ -209,26 +209,26 @@ func SaveRolePower(c *gin.Context) {
 }
 
 func RoleEdit(c *gin.Context) {
-	id := c.Query("id")
-	role, err := service.RoleEditService(id)
+	if c.Request.Method == "GET"{
+		id := c.Query("id")
+		role, err := service.RoleEditService(id)
 
-	if err != nil {
-		c.String(http.StatusOK, err.Error())
+		if err != nil {
+			c.String(http.StatusOK, err.Error())
+		}
+		c.HTML(http.StatusOK, "role_edit.html", gin.H{"role": role})
+	}else{
+		var f request.RoleEditForm
+		if err := c.ShouldBindJSON(&f); err != nil {
+			response.ErrorResp(c).SetMsg(validate.GetValidateError(err)).SetType(model.OperEdit).Log(e.RoleEditHandler, c.Request.Form).WriteJsonExit()
+			return
+		}
+		if err := service.RoleEditHandlerService(f); err != nil {
+			response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperEdit).Log(e.RoleEditHandler, f).WriteJsonExit()
+			return
+		}
+		response.SuccessResp(c).SetType(model.OperEdit).Log(e.RoleEditHandler, f).WriteJsonExit()
 	}
-	c.HTML(http.StatusOK, "role_edit.html", gin.H{"role": role})
-}
-
-func RoleEditHandler(c *gin.Context) {
-	var f request.RoleEditForm
-	if err := c.ShouldBindJSON(&f); err != nil {
-		response.ErrorResp(c).SetMsg(validate.GetValidateError(err)).SetType(model.OperEdit).Log(e.RoleEditHandler, c.Request.Form).WriteJsonExit()
-		return
-	}
-	if err := service.RoleEditHandlerService(f); err != nil {
-		response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperEdit).Log(e.RoleEditHandler, f).WriteJsonExit()
-		return
-	}
-	response.SuccessResp(c).SetType(model.OperEdit).Log(e.RoleEditHandler, f).WriteJsonExit()
 }
 
 func RoleDeleteHandler(c *gin.Context) {
@@ -244,7 +244,7 @@ func AuthList(c *gin.Context) {
 	c.HTML(http.StatusOK, "auth_list.html", gin.H{})
 }
 
-func AuthNodeEdit(c *gin.Context) {
+func AuthEdit(c *gin.Context) {
 	var req request.AuthNodeReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.ErrorResp(c).SetType(model.OperOther).SetMsg(err.Error()).Log(e.AuthNode, nil).WriteJsonExit()
@@ -277,7 +277,7 @@ func AuthDelete(c *gin.Context) {
 	response.SuccessResp(c).SetType(model.OperOther).Log(e.AuthDelete, c.Request.PostForm).WriteJsonExit()
 }
 
-func GetNode(c *gin.Context) {
+func AuthNode(c *gin.Context) {
 	authID := c.PostForm("id")
 	resp, err := service.FindAuthByID(authID)
 	if err != nil {
@@ -287,7 +287,7 @@ func GetNode(c *gin.Context) {
 	response.SuccessResp(c).SetData(resp).WriteJsonExit()
 }
 
-func GetNodes(c *gin.Context) {
+func AuthNodes(c *gin.Context) {
 	resp, count := service.FindAuths()
 	response.SuccessResp(c).SetCount(gconv.Int(count)).SetData(resp).WriteJsonExit()
 }
@@ -309,7 +309,7 @@ func EditNode(c *gin.Context) {
 	c.HTML(http.StatusOK, "auth_edit.html", gin.H{"parents": firstAuths, "seconds": secondAuths, "auth": resp})
 }
 
-func SelectParent(c *gin.Context) {
+func Parent(c *gin.Context) {
 	data := service.FindAllPower()
 	c.JSON(http.StatusOK, data)
 }

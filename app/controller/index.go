@@ -22,6 +22,6 @@ func Index(c *gin.Context) {
 	})
 }
 
-func FrameIndex(c *gin.Context) {
+func FramePage(c *gin.Context) {
 	c.HTML(http.StatusOK, "main.html", gin.H{})
 }

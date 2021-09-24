@@ -12,22 +12,22 @@ import (
 	"pear-admin-go/app/util/e"
 )
 
-func SiteList(c *gin.Context) {
-	site, sysID := service.GetSiteConf()
-	c.HTML(http.StatusOK, "site_config.html", gin.H{"id": sysID, "site": site})
-}
-
 func SiteEdit(c *gin.Context) {
-	var f request.SiteConfForm
-	if err := c.ShouldBind(&f); err != nil {
-		response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperEdit).Log(e.SiteEdit, c.Request.PostForm).WriteJsonExit()
-		return
+	if c.Request.Method == "GET"{
+		site, sysID := service.GetSiteConf()
+		c.HTML(http.StatusOK, "site_config.html", gin.H{"id": sysID, "site": site})
+	}else{
+		var f request.SiteConfForm
+		if err := c.ShouldBind(&f); err != nil {
+			response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperEdit).Log(e.SiteEdit, c.Request.PostForm).WriteJsonExit()
+			return
+		}
+		if err := service.SiteEditService(f); err != nil {
+			response.ErrorResp(c).SetType(model.OperEdit).Log(e.SiteEdit, c.Request.PostForm).WriteJsonExit()
+			return
+		}
+		response.SuccessResp(c).SetType(model.OperEdit).Log(e.SiteEdit, c.Request.PostForm).WriteJsonExit()
 	}
-	if err := service.SiteEditService(f); err != nil {
-		response.ErrorResp(c).SetType(model.OperEdit).Log(e.SiteEdit, c.Request.PostForm).WriteJsonExit()
-		return
-	}
-	response.SuccessResp(c).SetType(model.OperEdit).Log(e.SiteEdit, c.Request.PostForm).WriteJsonExit()
 }
 
 func MailList(c *gin.Context) {

@@ -2,7 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	controller "pear-admin-go/app/handler"
+	controller "pear-admin-go/app/controller"
 	"pear-admin-go/app/middleware"
 )
 

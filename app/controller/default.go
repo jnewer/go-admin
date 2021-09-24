@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-func DefaultUpload(c *gin.Context) {
+func Upload(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
 		response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperAdd).WriteJsonExit()
@@ -46,7 +46,7 @@ func DefaultUpload(c *gin.Context) {
 	response.SuccessResp(c).SetData(backFilePath).SetType(model.OperAdd).Log(e.DefaultUpload, file).WriteJsonExit()
 }
 
-func PearConfig(c *gin.Context) {
+func Pear(c *gin.Context) {
 	var (
 		data *model.PearConfigForm
 		err  error
@@ -70,7 +70,7 @@ func PearConfig(c *gin.Context) {
 	c.JSON(http.StatusOK, data)
 }
 
-func GetMenu(c *gin.Context) {
+func Menu(c *gin.Context) {
 	menuResp := service.MenuServiceV2(c)
 	c.JSON(http.StatusOK, menuResp.MenuResp)
 }

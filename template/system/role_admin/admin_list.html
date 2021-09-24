@@ -83,7 +83,7 @@
             });
             table.render({
                 elem: '#user-table',
-                url: '/system/admin/list_json',
+                url: '/system/admin/json',
                 page: true,
                 cols: [
                     [{
@@ -169,7 +169,7 @@
                     status = 1
                 }
                 $.ajax({
-                    url: "/system/admin/edit_status",
+                    url: "/system/admin/status",
                     type: "POST",
                     data: {id:this.value,status:status},
                     dataType:'json',

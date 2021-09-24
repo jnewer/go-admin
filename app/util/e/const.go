@@ -7,7 +7,7 @@ const (
 	DefUploadSize  = 2 * 1024 * 1024 // 默认最大上传
 	DefaultSaltLen = 10
 
-	AllowAuth = "/system,/system/index,/system/main,/system/pear_config,/system/menu_config" // 不需要验证的地址放在这里
+	AllowAuth = "/system,/system/index,/system/main,/system/pear,/system/menu" // 不需要验证的地址放在这里
 
 	// 日期格式化
 	TimeFormatDay = "20060102"
