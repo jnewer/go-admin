@@ -51,10 +51,10 @@ func SystemRouter(r *gin.Engine) {
 
 	// role 权限因子列表页
 	sr.GET("auth/list", controller.AuthList)
-	sr.POST("auth/edit", controller.AuthEdit)     // 新增、修改权限
 	sr.GET("auth/nodes", controller.AuthNodes)    // 权限配置页面
 	sr.GET("auth/add", controller.AddNode)        // 新增权限
-	sr.GET("auth/edit", controller.EditNode)      // 修改权限
+	sr.GET("auth/edit", controller.AuthEdit)      // 修改权限
+	sr.POST("auth/edit", controller.AuthEdit)     // 新增、修改权限
 	sr.POST("auth/node", controller.AuthNode)     // 权限因子列表页
 	sr.POST("auth/delete", controller.AuthDelete) // 权限因子列表页
 	sr.GET("auth/parent", controller.Parent)      // 权限列表

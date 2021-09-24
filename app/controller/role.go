@@ -209,7 +209,7 @@ func SaveRolePower(c *gin.Context) {
 }
 
 func RoleEdit(c *gin.Context) {
-	if c.Request.Method == "GET"{
+	if c.Request.Method == "GET" {
 		id := c.Query("id")
 		role, err := service.RoleEditService(id)
 
@@ -217,7 +217,7 @@ func RoleEdit(c *gin.Context) {
 			c.String(http.StatusOK, err.Error())
 		}
 		c.HTML(http.StatusOK, "role_edit.html", gin.H{"role": role})
-	}else{
+	} else {
 		var f request.RoleEditForm
 		if err := c.ShouldBindJSON(&f); err != nil {
 			response.ErrorResp(c).SetMsg(validate.GetValidateError(err)).SetType(model.OperEdit).Log(e.RoleEditHandler, c.Request.Form).WriteJsonExit()
@@ -245,25 +245,36 @@ func AuthList(c *gin.Context) {
 }
 
 func AuthEdit(c *gin.Context) {
-	var req request.AuthNodeReq
-	if err := c.ShouldBindJSON(&req); err != nil {
-		response.ErrorResp(c).SetType(model.OperOther).SetMsg(err.Error()).Log(e.AuthNode, nil).WriteJsonExit()
-		return
-	}
-	if req.ID == "" {
-		if err := service.AuthInsert(req); err != nil {
-			response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperOther).Log(e.AuthNodeAdd, req).WriteJsonExit()
-			return
+	if c.Request.Method == "GET" {
+		authID := c.Query("id")
+		resp, err := service.FindAuthByID(authID)
+		if err != nil {
+			c.String(http.StatusOK, err.Error())
 		}
-		cache.Instance().Delete(e.MenuCache + gconv.String(service.GetUid(c))) // 删除栏目列表缓存，重新进行设置
-		response.SuccessResp(c).SetType(model.OperEdit).Log(e.AuthNodeAdd, req).WriteJsonExit()
+		firstAuths := service.FindAuthName(0)
+		secondAuths := service.FindAuthName(1)
+		c.HTML(http.StatusOK, "auth_edit.html", gin.H{"parents": firstAuths, "seconds": secondAuths, "auth": resp})
 	} else {
-		if err := service.AuthUpdate(req); err != nil {
-			response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperOther).Log(e.AuthNodeEdit, req).WriteJsonExit()
+		var req request.AuthNodeReq
+		if err := c.ShouldBindJSON(&req); err != nil {
+			response.ErrorResp(c).SetType(model.OperOther).SetMsg(err.Error()).Log(e.AuthNode, nil).WriteJsonExit()
 			return
 		}
-		cache.Instance().Delete(e.MenuCache + gconv.String(service.GetUid(c))) // 删除栏目列表缓存，重新进行设置
-		response.SuccessResp(c).SetType(model.OperEdit).Log(e.AuthNodeEdit, req).WriteJsonExit()
+		if req.ID == "" {
+			if err := service.AuthInsert(req); err != nil {
+				response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperOther).Log(e.AuthNodeAdd, req).WriteJsonExit()
+				return
+			}
+			cache.Instance().Delete(e.MenuCache + gconv.String(service.GetUid(c))) // 删除栏目列表缓存，重新进行设置
+			response.SuccessResp(c).SetType(model.OperEdit).Log(e.AuthNodeAdd, req).WriteJsonExit()
+		} else {
+			if err := service.AuthUpdate(req); err != nil {
+				response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperOther).Log(e.AuthNodeEdit, req).WriteJsonExit()
+				return
+			}
+			cache.Instance().Delete(e.MenuCache + gconv.String(service.GetUid(c))) // 删除栏目列表缓存，重新进行设置
+			response.SuccessResp(c).SetType(model.OperEdit).Log(e.AuthNodeEdit, req).WriteJsonExit()
+		}
 	}
 }
 
@@ -296,17 +307,6 @@ func AddNode(c *gin.Context) {
 	firstAuths := service.FindAuthName(0)
 	secondAuths := service.FindAuthName(1)
 	c.HTML(http.StatusOK, "auth_add.html", gin.H{"parents": firstAuths, "seconds": secondAuths})
-}
-
-func EditNode(c *gin.Context) {
-	authID := c.Query("id")
-	resp, err := service.FindAuthByID(authID)
-	if err != nil {
-		c.String(http.StatusOK, err.Error())
-	}
-	firstAuths := service.FindAuthName(0)
-	secondAuths := service.FindAuthName(1)
-	c.HTML(http.StatusOK, "auth_edit.html", gin.H{"parents": firstAuths, "seconds": secondAuths, "auth": resp})
 }
 
 func Parent(c *gin.Context) {
