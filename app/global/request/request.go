@@ -1,5 +1,7 @@
 package request
 
+import "pear-admin-go/app/model"
+
 type LoginForm struct {
 	UserName string `json:"username" form:"username" binding:"required,min=3,max=30" zh:"用户名"`
 	Password string `json:"password" form:"password" binding:"required,min=3,max=30" zh:"密码"`
@@ -167,4 +169,9 @@ type SpiderListForm struct {
 	UserName string `json:"user_name" form:"user_name"`
 	Info     string `json:"info" form:"info"`
 	Url      string `json:"url" form:"url"`
+}
+
+type TaskForm struct {
+	model.TaskCommon
+	CreateTime string
 }
