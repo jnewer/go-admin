@@ -17,7 +17,7 @@ type ServerCommon struct {
 	Port           int    `json:"port,omitempty" form:"port" binding:"required,min=1" zh:"端口号"`
 	PrivateKeySrc  string `json:"private_key_src,omitempty" form:"private_key_src" zh:"私钥地址"` // ssh-keygen -t rsa -f pp_rsa
 	PublicKeySrc   string `json:"public_key_src,omitempty" form:"public_key_src" zh:"公钥地址"`
-	ConnType       int    `json:"type,omitempty" form:"type" zh:"登陆类型"` // 登陆类型 1=密码登陆 2=密钥登陆
+	ConnType       int    `json:"conn_type,omitempty" form:"conn_type" zh:"登陆类型"` // 登陆类型 1=密码登陆 2=密钥登陆
 	Detail         string `json:"detail,omitempty" form:"detail"`
 	Status         int    `json:"status,omitempty" form:"status"` // 0=初始 1=正常 2=停止
 }

@@ -37,8 +37,8 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">登陆类型</label>
                     <div class="layui-input-block">
-                        <input type="radio" name="type" lay-verify="type" lay-filter="type" value="1" title="密码" {{if eq .s.ConnType 1}}checked{{end}}>
-                        <input type="radio" name="type" lay-verify="type" lay-filter="type" value="2" title="密钥" {{if eq .s.ConnType 2}}checked{{end}}>
+                        <input type="radio" name="conn_type" lay-verify="type" lay-filter="type" value="1" title="密码" {{if eq .s.ConnType 1}}checked{{end}}>
+                        <input type="radio" name="conn_type" lay-verify="type" lay-filter="type" value="2" title="密钥" {{if eq .s.ConnType 2}}checked{{end}}>
                     </div>
                 </div>
                 <div class="layui-form-item conn-pwd" {{if eq .s.ConnType 2}}style="display:none;"{{end}}>

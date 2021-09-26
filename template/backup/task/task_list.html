@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>资源管理</title>
+    <title>任务管理</title>
     <link rel="stylesheet" href="/static/component/pear/css/pear.css" />
     <meta name="referrer" content="no-referrer"/>
 </head>
@@ -80,7 +80,7 @@
         });
         table.render({
             elem: '#role-table',
-            url: '/system/server/json',
+            url: '/system/backup/json',
             page: true,
             cols: [
                 [
@@ -136,7 +136,7 @@
                 title: '新增',
                 shade: 0.1,
                 area: [common.isModile() ? '100%' : '800px', common.isModile() ? '100%' : '600px'],
-                content: '/system/task/add'
+                content: '/system/backup/add'
             });
         }
 
