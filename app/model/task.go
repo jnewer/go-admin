@@ -2,7 +2,7 @@ package model
 
 import "time"
 
-type Task struct {
+type Backup struct {
 	TaskCommon
 	CreateTime time.Time
 }
@@ -17,4 +17,3 @@ type TaskCommon struct {
 	DstPath      string `json:"dst_path" zh:"目标地址" binding:"required" form:"dst_path"`
 	ExcludeType  string `json:"exclude_type" zh:"排除类型" form:"exclude_type"`
 }
-
