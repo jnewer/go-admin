@@ -15,6 +15,7 @@ import (
 	"pear-admin-go/app/util/captcha"
 	"pear-admin-go/app/util/e"
 	"pear-admin-go/app/util/validate"
+	"strings"
 	"time"
 )
 
@@ -118,7 +119,7 @@ func CaptchaVerify(c *gin.Context) {
 		return
 	}
 
-	if captcha.CaptVerify(id, capt) == true {
+	if captcha.CaptVerify(id, strings.ToLower(capt)) == true {
 		response2.SuccessResp(c).WriteJsonExit()
 	} else {
 		response2.ErrorResp(c).SetMsg("验证码有误，请重新输入").WriteJsonExit()

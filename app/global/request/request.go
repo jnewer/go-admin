@@ -175,3 +175,16 @@ type TaskForm struct {
 	model.TaskCommon
 	CreateTime string
 }
+
+type TaskServerForm struct {
+	model.ServerCommon
+	CreateTime string `json:"create_time,omitempty"`
+	UpdateTime string `json:"update_time,omitempty"`
+}
+
+type TaskServerPage struct {
+	LayerListForm
+	ServerName string `json:"server_name,omitempty" form:"server_name" zh:"服务器名称"`
+	ServerIp   string `json:"server_ip,omitempty" form:"server_ip" zh:"服务器IP"`
+	Detail     string `json:"detail,omitempty" form:"detail"`
+}
