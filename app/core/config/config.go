@@ -1,15 +1,21 @@
 package config
 
 import (
+	"github.com/cilidm/toolbox/file"
 	"github.com/spf13/viper"
+	"io/ioutil"
 	"log"
-	"sync"
+	"pear-admin-go/app/global/initial"
 )
 
-var (
-	once sync.Once
-	Conf = &conf{}
-)
+var c *conf
+
+func Instance() *conf {
+	if c == nil {
+		InitConfig("./config.toml")
+	}
+	return c
+}
 
 type conf struct {
 	DB     DBConf
@@ -45,17 +51,25 @@ type ZapLogConf struct {
 	Director string ` json:"director"  yaml:"director"`
 }
 
-func InitConfig(tomlPath string) {
-	once.Do(func() {
-		v := viper.New()
-		v.SetConfigFile(tomlPath)
-		err := v.ReadInConfig()
+func InitConfig(tomlPath ...string) {
+	if len(tomlPath) > 1 {
+		log.Fatal("配置路径数量不正确")
+	}
+	if file.CheckNotExist(tomlPath[0]) {
+		err := ioutil.WriteFile(tomlPath[0], []byte(initial.ConfigToml), 0777)
 		if err != nil {
-			log.Fatal("配置文件读取失败: ", err.Error())
+			log.Fatal("无法写入配置模板", err.Error())
 		}
-		err = v.Unmarshal(&Conf)
-		if err != nil {
-			log.Fatal("配置解析失败:", err.Error())
-		}
-	})
+		log.Fatal("配置文件不存在，已在根目录下生成示例模板文件【config.toml】，请修改后重新启动程序！")
+	}
+	v := viper.New()
+	v.SetConfigFile(tomlPath[0])
+	err := v.ReadInConfig()
+	if err != nil {
+		log.Fatal("配置文件读取失败: ", err.Error())
+	}
+	err = v.Unmarshal(&c)
+	if err != nil {
+		log.Fatal("配置解析失败:", err.Error())
+	}
 }

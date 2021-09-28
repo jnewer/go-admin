@@ -11,11 +11,12 @@ import (
 	"os"
 	"pear-admin-go/app/core/config"
 	"pear-admin-go/app/global"
+	"pear-admin-go/app/global/initial"
 	"pear-admin-go/app/model"
 )
 
 func InitConn() *gorm.DB {
-	switch config.Conf.DB.DBType {
+	switch config.Instance().DB.DBType {
 	case "mysql":
 		return GormMysql()
 	case "sqlite":
@@ -32,7 +33,7 @@ var (
 )
 
 func GormMysql() *gorm.DB {
-	m := config.Conf.DB
+	m := config.Instance().DB
 	if m.DBName == "" {
 		return nil
 	}
@@ -52,7 +53,7 @@ func GormMysql() *gorm.DB {
 }
 
 func GormSqlite() *gorm.DB {
-	dbFile := fmt.Sprintf("%s.db", config.Conf.DB.DBName)
+	dbFile := fmt.Sprintf("%s.db", config.Instance().DB.DBName)
 	if file.CheckNotExist(dbFile) {
 		if err := createDB(dbFile); err != nil {
 			log.Fatal("创建数据库文件失败：" + err.Error())
@@ -92,7 +93,7 @@ func initTables() {
 
 func checkTableData(tb interface{}) {
 	if db.HasTable(tb) == false {
-		if config.Conf.DB.DBType == "sqlite" {
+		if config.Instance().DB.DBType == "sqlite" {
 			if err := db.Debug().CreateTable(tb).Error; err != nil {
 				log.Fatal("创建数据表失败", err.Error())
 			}
@@ -118,7 +119,7 @@ func checkTableData(tb interface{}) {
 		}
 	} else {
 		// 已存在的表校验一下是否有新增字段
-		if config.Conf.DB.DBType == "sqlite" {
+		if config.Instance().DB.DBType == "sqlite" {
 			if err := db.Debug().AutoMigrate(tb).Error; err != nil {
 				log.Fatal("数据库初始化失败", err.Error())
 			}
@@ -131,7 +132,7 @@ func checkTableData(tb interface{}) {
 }
 
 func initData(sqlName string) {
-	dot, err := dotsql.LoadFromFile("database/base_system.sql")
+	dot, err := dotsql.LoadFromString(initial.SqlInfo)
 	if err != nil {
 		global.Log.Fatal("无法加载初始数据，请检查data文件夹下是否存在数据信息")
 		return

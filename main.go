@@ -31,8 +31,6 @@ func main() {
 		fmt.Println("init trans failed, err:", err)
 	}
 
-	config.InitConfig("./config.toml")
-
 	global.Log = log2.InitLog()
 
 	global.DBConn = db.InitConn()
@@ -40,7 +38,7 @@ func main() {
 	redis.InitRedis()
 	r := router.InitRouter(staticFs, templateFs)
 	s := &http.Server{
-		Addr:           fmt.Sprintf(":%d", config.Conf.App.HttpPort),
+		Addr:           fmt.Sprintf(":%d", config.Instance().App.HttpPort),
 		Handler:        r,
 		ReadTimeout:    30 * time.Second,
 		WriteTimeout:   30 * time.Second,
@@ -48,7 +46,7 @@ func main() {
 	}
 	fmt.Printf(`	欢迎使用 Pear Admin Go
 	程序运行地址:http://127.0.0.1:%s
-`, gconv.String(config.Conf.App.HttpPort))
+`, gconv.String(config.Instance().App.HttpPort))
 	go func() {
 		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			global.Log.Error(err.Error())

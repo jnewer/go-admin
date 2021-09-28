@@ -9,9 +9,9 @@ import (
 
 func InitRedis() {
 	client := redis.NewClient(&redis.Options{
-		Addr:     config.Conf.Redis.RedisAddr,
-		Password: config.Conf.Redis.RedisPWD, // no password set
-		DB:       config.Conf.Redis.RedisDB,  // use default DB
+		Addr:     config.Instance().Redis.RedisAddr,
+		Password: config.Instance().Redis.RedisPWD, // no password set
+		DB:       config.Instance().Redis.RedisDB,  // use default DB
 	})
 	pong, err := client.Ping().Result()
 	if err != nil {

@@ -13,7 +13,7 @@ import (
 
 func InitLog() (zapLog *zap.Logger) {
 	hook := lumberjack.Logger{
-		Filename:   path.Join(config.Conf.Zaplog.Director, time.Now().Format("2006-01-02")+".log"), // 日志文件路径
+		Filename:   path.Join(config.Instance().Zaplog.Director, time.Now().Format("2006-01-02")+".log"), // 日志文件路径
 		MaxSize:    10,                                                                             // 每个日志文件保存的最大尺寸 单位：M
 		MaxBackups: 50,                                                                             // 日志文件最多保存多少个备份
 		MaxAge:     10,                                                                             // 文件最多保存多少天

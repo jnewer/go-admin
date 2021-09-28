@@ -389,7 +389,7 @@ func ProfileEditService(f request.ProfileForm, c *gin.Context) error {
 }
 
 func GetImgSavePath(path string) string {
-	return strings.ReplaceAll(path, config.Conf.App.ImgUrlPath, config.Conf.App.ImgSavePath)
+	return strings.ReplaceAll(path, config.Instance().App.ImgUrlPath, config.Instance().App.ImgSavePath)
 }
 
 func GetLoginInfo(c *gin.Context) ([]model.LoginInfo, error) {

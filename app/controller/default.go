@@ -29,7 +29,7 @@ func Upload(c *gin.Context) {
 		return
 	}
 	day := time.Now().Format(e.TimeFormatDay)
-	savePath := filepath.Join(config.Conf.App.ImgSavePath, day) // 按年月日归档保存
+	savePath := filepath.Join(config.Instance().App.ImgSavePath, day) // 按年月日归档保存
 	err = f.IsNotExistMkDir(savePath)
 	if err != nil {
 		response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperAdd).Log(e.DefaultUpload, file).WriteJsonExit()
@@ -39,7 +39,7 @@ func Upload(c *gin.Context) {
 		response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperAdd).Log(e.DefaultUpload, file).WriteJsonExit()
 		return
 	}
-	backFilePath := filepath.Join(filepath.Join(config.Conf.App.ImgUrlPath, day), file.Filename)
+	backFilePath := filepath.Join(filepath.Join(config.Instance().App.ImgUrlPath, day), file.Filename)
 	if OS.IsWindows() {
 		backFilePath = strings.ReplaceAll(backFilePath, "\\", "/")
 	}
