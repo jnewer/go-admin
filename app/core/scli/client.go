@@ -52,9 +52,11 @@ func connectByPwd(server model.TaskServer) (*sftp.Client, error) {
 	}
 	addr = fmt.Sprintf("%s:%d", server.ServerIp, server.Port)
 	if sshClient, err = ssh.Dial("tcp", addr, clientConfig); err != nil {
+		global.Log.Error("ssh.Dial error: " + err.Error())
 		return nil, err
 	}
 	if sftpClient, err = sftp.NewClient(sshClient); err != nil {
+		global.Log.Error("sftp.NewClient error: " + err.Error())
 		return nil, err
 	}
 	return sftpClient, nil
@@ -68,12 +70,12 @@ func connectByKey(server model.TaskServer) (*sftp.Client, error) {
 	)
 	key, err := ioutil.ReadFile(server.PrivateKeySrc)
 	if err != nil {
-		global.Log.Fatal("unable to read private key: " + err.Error())
+		global.Log.Error("unable to read private key: " + err.Error())
 		return nil, err
 	}
 	signer, err := ssh.ParsePrivateKey(key)
 	if err != nil {
-		global.Log.Fatal("unable to parse private key: " + err.Error())
+		global.Log.Error("unable to parse private key: " + err.Error())
 		return nil, err
 	}
 
@@ -86,10 +88,11 @@ func connectByKey(server model.TaskServer) (*sftp.Client, error) {
 	}
 	sshClient, err = ssh.Dial("tcp", fmt.Sprintf("%s:%d", server.ServerIp, server.Port), clientConf)
 	if err != nil {
-		global.Log.Fatal("unable to connect: " + err.Error())
+		global.Log.Error("unable to connect: " + err.Error())
 		return nil, err
 	}
 	if sftpClient, err = sftp.NewClient(sshClient); err != nil {
+		global.Log.Error("sftp.NewClient error: " + err.Error())
 		return nil, err
 	}
 	return sftpClient, nil
