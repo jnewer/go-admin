@@ -9,7 +9,7 @@ import (
 )
 
 type TaskDao interface {
-	Insert(model.Task) error
+	Insert(model.Task) (int, error)
 	FindOne(int) (*model.Task, error)
 	Update(model.Task, map[string]interface{}) error
 	Delete(model.Task) error
@@ -26,9 +26,9 @@ func NewTaskDaoImpl() TaskDao {
 type TaskDaoImpl struct {
 }
 
-func (t TaskDaoImpl) Insert(task model.Task) error {
+func (t TaskDaoImpl) Insert(task model.Task) (int, error) {
 	err := db.Instance().Create(&task).Error
-	return err
+	return task.Id, err
 }
 
 func (t TaskDaoImpl) FindOne(id int) (*model.Task, error) {

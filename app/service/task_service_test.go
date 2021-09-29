@@ -12,11 +12,11 @@ import (
 func init() {
 	config.InitConfig("../../config.toml")
 	global.Log = log2.InitLog()
-	db.Instance() = db.InitConn()
+	db.InitConn()
 }
 
 func TestRunTask(t *testing.T) {
-	task, _ := dao.NewTaskDaoImpl().FindOne(6)
+	task, _ := dao.NewTaskDaoImpl().FindOne(11)
 	RunTask(*task)
 	select {}
 }

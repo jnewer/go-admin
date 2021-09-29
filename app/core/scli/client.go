@@ -64,7 +64,6 @@ func connectByPwd(server model.TaskServer) (*sftp.Client, error) {
 
 func connectByKey(server model.TaskServer) (*sftp.Client, error) {
 	var (
-		hostKey    ssh.PublicKey
 		sshClient  *ssh.Client
 		sftpClient *sftp.Client
 	)
@@ -80,11 +79,14 @@ func connectByKey(server model.TaskServer) (*sftp.Client, error) {
 	}
 
 	clientConf := &ssh.ClientConfig{
-		User: "user",
+		User: server.ServerAccount,
 		Auth: []ssh.AuthMethod{
 			ssh.PublicKeys(signer),
 		},
-		HostKeyCallback: ssh.FixedHostKey(hostKey),
+		HostKeyCallback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
+			return nil
+		},
+		Timeout: 15 * time.Second,
 	}
 	sshClient, err = ssh.Dial("tcp", fmt.Sprintf("%s:%d", server.ServerIp, server.Port), clientConf)
 	if err != nil {

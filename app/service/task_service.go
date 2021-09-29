@@ -47,10 +47,11 @@ func TaskAdd(f request.TaskForm) error {
 		f.DstPath = strings.ReplaceAll(f.DstPath, "\\", "/")
 	}
 	s.CreateTime = time.Now()
-	err = dao.NewTaskDaoImpl().Insert(s)
+	tid, err := dao.NewTaskDaoImpl().Insert(s)
 	if err != nil {
 		return err
 	}
+	s.Id = tid
 	go RunTask(s)
 	return nil
 }
