@@ -13,6 +13,20 @@ func TaskList(c *gin.Context) {
 	c.HTML(http.StatusOK, "task_list.html", nil)
 }
 
+func TaskJson(c *gin.Context) {
+	var f request.TaskPage
+	if err := c.ShouldBind(&f); err != nil {
+		response.ErrorResp(c).SetMsg(validate.GetValidateError(err)).WriteJsonExit()
+		return
+	}
+	data, count, err := service.TaskJson(f)
+	if err != nil {
+		response.SuccessResp(c).SetCode(0).SetMsg(err.Error()).SetCount(count).WriteJsonExit()
+		return
+	}
+	response.SuccessResp(c).SetCode(0).SetCount(count).SetData(data).WriteJsonExit()
+}
+
 func TaskAdd(c *gin.Context) {
 	if c.Request.Method == "GET" {
 		servers, _, _ := service.ServerList()
@@ -40,4 +54,3 @@ func TaskEdit(c *gin.Context) {
 func TaskDel(c *gin.Context) {
 
 }
-

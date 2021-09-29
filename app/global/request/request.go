@@ -188,3 +188,7 @@ type TaskServerPage struct {
 	ServerIp   string `json:"server_ip,omitempty" form:"server_ip" zh:"服务器IP"`
 	Detail     string `json:"detail,omitempty" form:"detail"`
 }
+
+type TaskPage struct {
+	LayerListForm
+}

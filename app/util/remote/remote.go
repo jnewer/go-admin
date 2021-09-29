@@ -3,11 +3,12 @@ package remote
 import (
 	"fmt"
 	"github.com/cilidm/toolbox/OS"
-	"github.com/cilidm/toolbox/logging"
 	"github.com/pkg/sftp"
+	"go.uber.org/zap"
 	"os"
 	"path"
 	"pear-admin-go/app/global"
+	"runtime"
 	"strings"
 )
 
@@ -29,7 +30,10 @@ func (this *Remote) CheckAccess() {
 
 func (this *Remote) LocalToRemote(fname string, fsize int64) error {
 	if OS.IsWindows() {
+		this.sourcePath = strings.ReplaceAll(this.sourcePath, "\\", "/")
 		this.dstPath = strings.ReplaceAll(this.dstPath, "\\", "/")
+		fname = strings.ReplaceAll(fname, "\\", "/")
+		fname = strings.ReplaceAll(fname, this.sourcePath, "")
 	}
 	rf := path.Join(this.dstPath, fname) // 文件在服务器的路径及名称
 	has, err := this.dstClient.Stat(rf)
@@ -37,19 +41,23 @@ func (this *Remote) LocalToRemote(fname string, fsize int64) error {
 		global.Log.Debug(fmt.Sprintf("文件%s已存在", rf))
 		return nil
 	}
-	this.dstClient.MkdirAll(this.dstPath)
+	err = this.dstClient.MkdirAll(this.dstPath)
+	if err != nil {
+		return err
+	}
 	err = this.dstClient.Chmod(this.dstPath, os.ModePerm)
 	if err != nil {
 		return err
 	}
 	srcFile, err := os.Open(path.Join(this.sourcePath, fname))
 	if err != nil {
-		logging.Error("源文件无法读取", err.Error())
+		global.Log.Error("源文件无法读取", zap.Error(err))
 		return err
 	}
 	defer srcFile.Close()
 	dstFile, err := this.dstClient.Create(rf) // 如果文件存在，create会清空原文件 openfile会追加
 	if err != nil {
+		global.Log.Error("this.dstClient.Create", zap.Error(err))
 		return err
 	}
 	defer dstFile.Close()
@@ -61,6 +69,20 @@ func (this *Remote) LocalToRemote(fname string, fsize int64) error {
 			break
 		}
 		dstFile.Write(buf[:n]) // 读多少 写多少
+	}
+	global.Log.Info(fmt.Sprintf("【%s】传输完毕", fname))
+	return nil
+}
+
+func (this *Remote) Mkdir(p string) error {
+	if runtime.GOOS == "windows" {
+		p = strings.ReplaceAll(p, "\\", "/")
+	}
+	dst := path.Join(this.dstPath, p)
+	fmt.Println(dst)
+	err := this.dstClient.MkdirAll(dst)
+	if err != nil {
+		return err
 	}
 	return nil
 }

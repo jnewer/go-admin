@@ -44,7 +44,7 @@
                 <div class="layui-form-item dst-menu" style="display: none;">
                     <label class="layui-form-label">目标服务器</label>
                     <div class="layui-input-inline">
-                        <select name="dst-server" lay-search>
+                        <select name="dst_server" lay-search>
                             <option value=""></option>
                             {{range $v := .servers}}
                             <option value="{{$v.Id}}">{{$v.ServerName}}</option>
@@ -61,7 +61,7 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">排除类型</label>
                     <div class="layui-input-block">
-                        <input type="text" name="exclude_type" lay-verify="required" placeholder="多个请用,分隔开,如.jpg,.png" autocomplete="off"  class="layui-input">
+                        <input type="text" name="exclude_type" lay-verify="" placeholder="多个请用,分隔开,如.jpg,.png" autocomplete="off"  class="layui-input">
                     </div>
                 </div>
             </div>

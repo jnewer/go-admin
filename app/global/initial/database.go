@@ -1,4 +1,6 @@
--- name: create-admin
+package initial
+
+const SqlData = `-- name: create-admin
 INSERT INTO 'admin' ('id', 'login_name', 'real_name', 'password', 'role_ids', 'phone', 'email', 'avatar', 'salt', 'last_ip', 'last_login', 'status', 'create_id', 'update_id', 'created_at', 'updated_at', 'level')
 VALUES
 	(1,'admin','admin','8ebf088c456f925ce22b881eff76bec7','0','','','/static/admin/images/avatar.jpg','BtBFNwXINC','::1','2020-10-15 17:07:29',1,0,0,'2020-09-27 17:44:35','2020-10-15 17:07:29',99),
@@ -73,3 +75,4 @@ VALUES
 INSERT INTO 'pear_config'('id', 'created_at', 'updated_at', 'config_type', 'config_data', 'config_status')
 VALUES 
     (1, '2021-05-28 10:48:35', '2021-05-28 10:48:35', 'pear-config', '{"colors":[{"color":"#2d8cf0","id":"1"},{"color":"#5FB878","id":"2"},{"color":"#1E9FFF","id":"3"},{"color":"#FFB800","id":"4"},{"color":"darkgray","id":"5"}],"header":{"message":"/static/admin/data/message.json"},"links":[{"href":"http://www.pearadmin.com","icon":"layui-icon layui-icon-auz","title":"官方网站"},{"href":"http://www.pearadmin.com","icon":"layui-icon layui-icon-auz","title":"开发文档"},{"href":"https://gitee.com/Jmysy/Pear-Admin-Layui","icon":"layui-icon layui-icon-auz","title":"开源地址"}],"logo":{"image":"/static/admin/images/logo.png","title":"Pear Admin"},"menu":{"accordion":true,"control":false,"data":"/system/menu","method":"GET","select":"60"},"other":{"autoHead":false,"keepLoad":100},"tab":{"index":{"href":"/system/main","id":"60","title":"首页"},"keepState":true,"muiltTab":true,"tabMax":30},"theme":{"allowCustom":true,"defaultColor":"2","defaultMenu":"dark-theme"}}', 1);
+`

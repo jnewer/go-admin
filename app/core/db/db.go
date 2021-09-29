@@ -11,6 +11,7 @@ import (
 	"os"
 	"pear-admin-go/app/core/config"
 	"pear-admin-go/app/global"
+	"pear-admin-go/app/global/initial"
 	"pear-admin-go/app/model"
 )
 
@@ -133,9 +134,9 @@ func checkTableData(tb interface{}) {
 }
 
 func initData(sqlName string) {
-	dot, err := dotsql.LoadFromFile("database/base_system.sql")
+	dot, err := dotsql.LoadFromString(initial.SqlData)
 	if err != nil {
-		global.Log.Fatal("无法加载初始数据，请检查data文件夹下是否存在数据信息")
+		global.Log.Fatal("无法加载初始数据")
 		return
 	}
 	_, err = dot.Exec(db.DB(), sqlName)

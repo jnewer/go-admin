@@ -16,7 +16,7 @@ func BackupRouter(r *gin.Engine) {
 	tr.POST("server/del", controller.ServerDel)
 
 	tr.GET("task/list", controller.TaskList)
-	tr.GET("task/json", controller.ServerJson)
+	tr.GET("task/json", controller.TaskJson)
 	tr.GET("task/add", controller.TaskAdd)
 	tr.POST("task/add", controller.TaskAdd)
 	tr.GET("task/edit", controller.TaskEdit)
