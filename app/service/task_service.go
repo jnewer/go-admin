@@ -9,7 +9,7 @@ import (
 )
 
 func TaskAdd(f request.TaskForm) error {
-	var s model.Backup
+	var s model.Task
 	err := str.CopyFields(&s, f)
 	if err != nil {
 		return err
@@ -20,4 +20,11 @@ func TaskAdd(f request.TaskForm) error {
 		return err
 	}
 	return nil
+}
+
+func WatchTask() {
+	for {
+
+		time.Sleep(time.Minute)
+	}
 }

@@ -2,7 +2,7 @@ package model
 
 import "time"
 
-type Backup struct {
+type Task struct {
 	TaskCommon
 	CreateTime time.Time
 }

@@ -9,13 +9,13 @@ import (
 )
 
 type TaskDao interface {
-	Insert(model.Backup) error
-	FindOne(int) (*model.Backup, error)
-	Update(model.Backup, map[string]interface{}) error
-	Delete(model.Backup) error
-	Findtask(k, v string) (*model.Backup, error)
-	Findtasks(k, v string) ([]model.Backup, error)
-	FindByPage(pageNum, limit int, filters ...interface{}) ([]model.Backup, int, error)
+	Insert(model.Task) error
+	FindOne(int) (*model.Task, error)
+	Update(model.Task, map[string]interface{}) error
+	Delete(model.Task) error
+	Findtask(k, v string) (*model.Task, error)
+	Findtasks(k, v string) ([]model.Task, error)
+	FindByPage(pageNum, limit int, filters ...interface{}) ([]model.Task, int, error)
 }
 
 func NewTaskDaoImpl() TaskDao {
@@ -26,14 +26,14 @@ func NewTaskDaoImpl() TaskDao {
 type TaskDaoImpl struct {
 }
 
-func (t TaskDaoImpl) Insert(task model.Backup) error {
+func (t TaskDaoImpl) Insert(task model.Task) error {
 	err := global.DBConn.Create(&task).Error
 	return err
 }
 
-func (t TaskDaoImpl) FindOne(id int) (*model.Backup, error) {
-	var task model.Backup
-	err := global.DBConn.Model(model.Backup{}).First(&task, id).Error
+func (t TaskDaoImpl) FindOne(id int) (*model.Task, error) {
+	var task model.Task
+	err := global.DBConn.Model(model.Task{}).First(&task, id).Error
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return nil, nil
@@ -43,18 +43,18 @@ func (t TaskDaoImpl) FindOne(id int) (*model.Backup, error) {
 	return &task, err
 }
 
-func (t TaskDaoImpl) Update(task model.Backup, m map[string]interface{}) error {
+func (t TaskDaoImpl) Update(task model.Task, m map[string]interface{}) error {
 	err := global.DBConn.Model(&task).Omit("id").Updates(m).Error
 	return err
 }
 
-func (t TaskDaoImpl) Delete(task model.Backup) error {
+func (t TaskDaoImpl) Delete(task model.Task) error {
 	err := global.DBConn.Delete(&task).Error
 	return err
 }
 
-func (t TaskDaoImpl) Findtask(k, v string) (*model.Backup, error) {
-	var task model.Backup
+func (t TaskDaoImpl) Findtask(k, v string) (*model.Task, error) {
+	var task model.Task
 	err := global.DBConn.Model(model.TaskServer{}).Where(k, v).First(&task).Error
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
@@ -65,8 +65,8 @@ func (t TaskDaoImpl) Findtask(k, v string) (*model.Backup, error) {
 	return &task, nil
 }
 
-func (t TaskDaoImpl) Findtasks(k, v string) ([]model.Backup, error) {
-	var tasks []model.Backup
+func (t TaskDaoImpl) Findtasks(k, v string) ([]model.Task, error) {
+	var tasks []model.Task
 	err := global.DBConn.Model(model.TaskServer{}).Where(k, v).Find(&tasks).Error
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
@@ -77,7 +77,7 @@ func (t TaskDaoImpl) Findtasks(k, v string) ([]model.Backup, error) {
 	return tasks, nil
 }
 
-func (t TaskDaoImpl) FindByPage(pageNum, limit int, filters ...interface{}) ([]model.Backup, int, error) {
+func (t TaskDaoImpl) FindByPage(pageNum, limit int, filters ...interface{}) ([]model.Task, int, error) {
 	offset := (pageNum - 1) * limit
 	var queryArr []string
 	var values []interface{}
@@ -89,7 +89,7 @@ func (t TaskDaoImpl) FindByPage(pageNum, limit int, filters ...interface{}) ([]m
 		}
 	}
 	var (
-		tasks []model.Backup
+		tasks []model.Task
 		count int
 	)
 	query := global.DBConn.Model(model.TaskServer{})

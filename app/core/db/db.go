@@ -88,7 +88,7 @@ func initTables() {
 	checkTableData(&model.RoleAuth{})
 	checkTableData(&model.SysConf{})
 	checkTableData(&model.PearConfig{})
-	checkTableData(&model.Backup{})
+	checkTableData(&model.Task{})
 	checkTableData(&model.TaskServer{})
 }
 
