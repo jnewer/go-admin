@@ -16,4 +16,5 @@ type TaskCommon struct {
 	DstServer    int    `json:"dst_server" zh:"目标服务器" form:"dst_server"`
 	DstPath      string `json:"dst_path" zh:"目标地址" binding:"required" form:"dst_path"`
 	ExcludeType  string `json:"exclude_type" zh:"排除类型" form:"exclude_type"`
+	TaskFileNum  int    `json:"task_file_num"`
 }

@@ -12,6 +12,7 @@ type TaskLogDao interface {
 	Update(model.TaskLog, map[string]interface{}) error
 	Delete(int) error
 	FindByPage(pageNum, limit int, filters ...interface{}) ([]model.TaskLog, int, error)
+	CountByTaskId(int) (int, error)
 }
 
 func NewTaskLogDaoImpl() TaskLogDao {
@@ -54,4 +55,13 @@ func (this *TaskLogDaoImpl) FindByPage(pageNum, limit int, filters ...interface{
 	query.Where(strings.Join(queryArr, " AND "), values...).Count(&count)
 	err = query.Where(strings.Join(queryArr, " AND "), values...).Order("id desc").Limit(limit).Offset(offset).Find(&infos).Error
 	return
+}
+
+func (this *TaskLogDaoImpl) CountByTaskId(taskId int) (int, error) {
+	var count int
+	err := db.Instance().Model(model.TaskLog{}).Where("task_id = ?", taskId).Count(&count).Error
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
 }

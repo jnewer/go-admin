@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/cilidm/toolbox/str"
 	"go.uber.org/zap"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"pear-admin-go/app/core/scli"
@@ -59,7 +60,7 @@ func TaskAdd(f request.TaskForm) error {
 func RunTask(task model.Task) {
 	s, err := dao.NewTaskServerDaoImpl().FindOne(task.DstServer)
 	if err != nil {
-		global.Log.Error("runTask.FindOne", zap.Error(err))
+		global.Log.Error("RunTask.FindOne", zap.Error(err))
 		return
 	}
 	if s == nil {
@@ -68,16 +69,66 @@ func RunTask(task model.Task) {
 	}
 	cli, err := scli.Instance(*s)
 	if err != nil {
-		global.Log.Error("runTask.scli.Instance", zap.Error(err))
+		global.Log.Error("RunTask.scli.Instance", zap.Error(err))
 		return
 	}
 	rm := remote.NewRemote(task.Id, task.DstServer, task.SourcePath, task.DstPath, nil, cli)
 	fp = pool.NewPool(10)
-	WalkPath(task.SourcePath, rm, task.SourcePath)
+	fcount := WalkPathV2(task.SourcePath, rm, task.SourcePath)
+	//fcount, err := dao.NewTaskLogDaoImpl().CountByTaskId(task.Id)
+	//if err != nil {
+	//	global.Log.Error("RunTask.CountByTaskId", zap.Error(err))
+	//	return
+	//}
+	err = dao.NewTaskDaoImpl().Update(task, map[string]interface{}{"task_file_num": fcount})
+	if err != nil {
+		global.Log.Error("RunTask.Update", zap.Error(err))
+		return
+	}
 }
 
 var fp *pool.Pool
 
+func WalkPathV2(dir string, rm *remote.Remote, sourceDir string) int {
+	count := 0
+	_ = filepath.Walk(dir, func(v string, info fs.FileInfo, err error) error {
+		if err != nil {
+			global.Log.Error("WalkPathV2.Walk.err", zap.Error(err))
+			return nil
+		}
+		if info == nil {
+			global.Log.Error("WalkPathV2.Walk.info Is Nil")
+			return nil
+		}
+		stat, err := os.Stat(v)
+		if err != nil {
+			global.Log.Error("WalkPathV2.os.Stat", zap.Error(err))
+			return nil
+		}
+		if stat.IsDir() && v != sourceDir {
+			dname := string([]rune(strings.ReplaceAll(v, sourceDir, ""))[1:])
+			err = rm.Mkdir(dname)
+			if err != nil {
+				global.Log.Error("WalkPath.rm.Mkdir", zap.Error(err))
+				return nil
+			}
+		} else {
+			count++
+			fp.Add(1)
+			go func(v string, size int64) {
+				defer fp.Done()
+				err = rm.LocalToRemote(v, size)
+				if err != nil {
+					global.Log.Error("WalkPath.LocalToRemote", zap.Error(err))
+				}
+			}(v, stat.Size())
+		}
+		return nil
+	})
+	return count
+}
+
+// 递归方式无法准确获取文件查询的完成时间
 func WalkPath(dir string, rm *remote.Remote, sourceDir string) {
 	paths, err := filepath.Glob(strings.TrimRight(dir, "/") + "/*")
 	if err != nil {

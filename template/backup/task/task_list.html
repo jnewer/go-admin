@@ -85,16 +85,18 @@
             cols: [
                 [
                     {field: 'id', title: 'ID',width:75, align: 'center', sort: true},
-                    {field: 'server_name', title: '服务器名称', align: 'center', sort: true},
-                    {field: 'conn_type', title: '连接方式', align: 'center', sort: true,templet: function(res){
-                            if(res.conn_type == 1){
-                                return '密码'
-                            }else{
-                                return '密钥'
+                    {field: '', title: '任务类型', align: 'center', sort: true,templet: function(res){
+                            if(res.source_type == 1 && res.dst_type == 2){
+                                return '本地->云端'
+                            }else if(res.source_type == 2 && res.dst_type == 1){
+                                return '云端->本地'
+                            }else if(res.source_type == 2 && res.dst_type == 2){
+                                return '云端->云端'
                             }
                         }},
-                    {field: 'server_ip', title: 'IP', align: 'center', sort: true},
-                    {field: 'detail', title: '备注', align: 'center', sort: true},
+                    {field: 'source_path', title: '源地址', align: 'center', sort: true},
+                    {field: 'dst_path', title: '目标地址', align: 'center', sort: true},
+                    {field: 'task_file_num', title: '文件数量', align: 'center', sort: true},
                     {title: '操作', toolbar: '#server-bar', align: 'center', width: 140}
                 ]
             ],
