@@ -7,20 +7,25 @@ import (
 	"go.uber.org/zap"
 	"os"
 	"path"
+	"pear-admin-go/app/dao"
 	"pear-admin-go/app/global"
+	"pear-admin-go/app/model"
 	"runtime"
 	"strings"
+	"time"
 )
 
 type Remote struct {
+	taskId       int
+	serverId     int
 	sourcePath   string       // 源路径
 	dstPath      string       // 目标路径
 	sourceClient *sftp.Client // 源服务器连接
 	dstClient    *sftp.Client // 目标服务器连接
 }
 
-func NewRemote(sourcePath string, dstPath string, sourceClient *sftp.Client, dstClient *sftp.Client) *Remote {
-	return &Remote{sourcePath: sourcePath, dstPath: dstPath, sourceClient: sourceClient, dstClient: dstClient}
+func NewRemote(taskId int, serverId int, sourcePath string, dstPath string, sourceClient *sftp.Client, dstClient *sftp.Client) *Remote {
+	return &Remote{taskId: taskId, serverId: serverId, sourcePath: sourcePath, dstPath: dstPath, sourceClient: sourceClient, dstClient: dstClient}
 }
 
 // 校验目标地址权限
@@ -69,6 +74,17 @@ func (this *Remote) LocalToRemote(fname string, fsize int64) error {
 			break
 		}
 		dstFile.Write(buf[:n]) // 读多少 写多少
+	}
+	err = dao.NewTaskLogDaoImpl().Insert(model.TaskLog{
+		TaskId:     this.taskId,
+		ServerId:   this.serverId,
+		SourcePath: path.Join(this.sourcePath, fname),
+		DstPath:    rf,
+		Size:       fsize,
+		CreateTime: time.Now(),
+	})
+	if err != nil {
+		return err
 	}
 	global.Log.Info(fmt.Sprintf("【%s】传输完毕", fname))
 	return nil

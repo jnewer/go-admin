@@ -2,7 +2,7 @@ package dao
 
 import (
 	"github.com/cilidm/toolbox/gconv"
-	"pear-admin-go/app/global"
+	"pear-admin-go/app/core/db"
 	"pear-admin-go/app/model"
 	"strings"
 	"sync"
@@ -33,13 +33,13 @@ func (l *LoginInfoDaoImpl) FindByPage(pageNum, limit int, filters ...interface{}
 			values = append(values, filters[k+1])
 		}
 	}
-	query := global.DBConn.Model(model.LoginInfo{})
+	query := db.Instance().Model(model.LoginInfo{})
 	query.Where(strings.Join(queryArr, " AND "), values...).Count(&count)
 	err = query.Where(strings.Join(queryArr, " AND "), values...).Order("info_id desc").Limit(limit).Offset(offset).Find(&info).Error
 	return
 }
 
 func (l *LoginInfoDaoImpl) Insert(info model.LoginInfo) error {
-	err := global.DBConn.Create(&info).Error
+	err := db.Instance().Create(&info).Error
 	return err
 }

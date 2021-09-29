@@ -2,7 +2,7 @@ package dao
 
 import (
 	"github.com/cilidm/toolbox/gconv"
-	"pear-admin-go/app/global"
+	"pear-admin-go/app/core/db"
 	"pear-admin-go/app/model"
 	"strings"
 )
@@ -22,7 +22,7 @@ type OperLogDaoImpl struct {
 }
 
 func (op *OperLogDaoImpl) Insert(oper model.OperLog) error {
-	err := global.DBConn.Create(&oper).Error
+	err := db.Instance().Create(&oper).Error
 	return err
 }
 
@@ -31,7 +31,7 @@ func (op *OperLogDaoImpl) Delete() error {
 }
 
 func (op *OperLogDaoImpl) FindByPage(pageNum, limit int, filters ...interface{}) (opers []model.OperLog, count int, err error) {
-	client := global.DBConn
+	client := db.Instance()
 	offset := (pageNum - 1) * limit
 
 	var queryArr []string

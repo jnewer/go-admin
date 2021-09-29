@@ -70,7 +70,7 @@ func RunTask(task model.Task) {
 		global.Log.Error("runTask.scli.Instance", zap.Error(err))
 		return
 	}
-	rm := remote.NewRemote(task.SourcePath, task.DstPath, nil, cli)
+	rm := remote.NewRemote(task.Id, task.DstServer, task.SourcePath, task.DstPath, nil, cli)
 	fp = pool.NewPool(10)
 	WalkPath(task.SourcePath, rm, task.SourcePath)
 }
@@ -101,7 +101,7 @@ func WalkPath(dir string, rm *remote.Remote, sourceDir string) {
 			}
 			WalkPath(v, rm, sourceDir)
 		} else {
-			global.Log.Info(fmt.Sprintf("发现文件 【%s】", v))
+			//global.Log.Info(fmt.Sprintf("发现文件 【%s】", v))
 			fp.Add(1)
 			go func(v string, size int64) {
 				defer fp.Done()

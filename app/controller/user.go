@@ -52,9 +52,9 @@ func AvatarEdit(c *gin.Context) {
 }
 
 func PwdEdit(c *gin.Context) {
-	if c.Request.Method == "GET"{
+	if c.Request.Method == "GET" {
 		c.HTML(http.StatusOK, "user_pwd.html", gin.H{})
-	}else{
+	} else {
 		var pwd request.PasswordForm
 		if err := c.ShouldBind(&pwd); err != nil {
 			response.ErrorResp(c).SetMsg(validate.GetValidateError(err)).SetType(model.OperEdit).Log(e.PwdEditHandler, c.Request.PostForm).WriteJsonExit()

@@ -2,7 +2,7 @@ package dao
 
 import (
 	"github.com/jinzhu/gorm"
-	"pear-admin-go/app/global"
+	"pear-admin-go/app/core/db"
 	"pear-admin-go/app/model"
 )
 
@@ -21,13 +21,13 @@ type SiteConfigDaoImpl struct {
 }
 
 func (f SiteConfigDaoImpl) Insert(site model.PearConfig) error {
-	err := global.DBConn.Model(model.PearConfig{}).Where("config_type = ?", site.ConfigType).FirstOrCreate(&site).Error
+	err := db.Instance().Model(model.PearConfig{}).Where("config_type = ?", site.ConfigType).FirstOrCreate(&site).Error
 	return err
 }
 
 func (f SiteConfigDaoImpl) FindOne(configType model.PearConfigType) (*model.PearConfig, error) {
 	var site model.PearConfig
-	err := global.DBConn.Model(model.PearConfig{}).Where("config_status = 1 AND config_type = ?", configType).First(&site).Error
+	err := db.Instance().Model(model.PearConfig{}).Where("config_status = 1 AND config_type = ?", configType).First(&site).Error
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return nil, nil
@@ -39,6 +39,6 @@ func (f SiteConfigDaoImpl) FindOne(configType model.PearConfigType) (*model.Pear
 }
 
 func (f SiteConfigDaoImpl) Update(site model.PearConfig, attr map[string]interface{}) error {
-	err := global.DBConn.Model(&site).Where("id = ?", site.ID).Updates(attr).Error
+	err := db.Instance().Model(&site).Where("id = ?", site.ID).Updates(attr).Error
 	return err
 }

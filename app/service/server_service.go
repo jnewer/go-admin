@@ -102,4 +102,3 @@ func ServerList() ([]model.TaskServer, int, error) {
 	}
 	return t, c, nil
 }
-

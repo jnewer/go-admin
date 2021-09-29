@@ -3,7 +3,7 @@ package dao
 import (
 	"github.com/cilidm/toolbox/gconv"
 	"github.com/jinzhu/gorm"
-	"pear-admin-go/app/global"
+	"pear-admin-go/app/core/db"
 	"pear-admin-go/app/model"
 	"strings"
 )
@@ -38,20 +38,20 @@ func (r *TaskServerDaoImpl) FindByPage(pageNum, limit int, filters ...interface{
 			values = append(values, filters[k+1])
 		}
 	}
-	query := global.DBConn.Model(model.TaskServer{})
+	query := db.Instance().Model(model.TaskServer{})
 	query.Where(strings.Join(queryArr, " AND "), values...).Count(&count)
 	err = query.Where(strings.Join(queryArr, " AND "), values...).Order("id desc").Limit(limit).Offset(offset).Find(&servers).Error
 	return
 }
 
 func (r *TaskServerDaoImpl) Insert(server model.TaskServer) error {
-	err := global.DBConn.Create(&server).Error
+	err := db.Instance().Create(&server).Error
 	return err
 }
 
 func (r *TaskServerDaoImpl) FindOne(serverID int) (*model.TaskServer, error) {
 	var server model.TaskServer
-	err := global.DBConn.Model(model.TaskServer{}).First(&server, serverID).Error
+	err := db.Instance().Model(model.TaskServer{}).First(&server, serverID).Error
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return nil, nil
@@ -62,17 +62,17 @@ func (r *TaskServerDaoImpl) FindOne(serverID int) (*model.TaskServer, error) {
 }
 
 func (r *TaskServerDaoImpl) Update(server model.TaskServer, attr map[string]interface{}) error {
-	err := global.DBConn.Model(&server).Omit("id").Updates(attr).Error
+	err := db.Instance().Model(&server).Omit("id").Updates(attr).Error
 	return err
 }
 
 func (r *TaskServerDaoImpl) Delete(server model.TaskServer) error {
-	err := global.DBConn.Delete(&server).Error
+	err := db.Instance().Delete(&server).Error
 	return err
 }
 
 func (r *TaskServerDaoImpl) FindServer(k, v string) (server *model.TaskServer, err error) {
-	err = global.DBConn.Model(model.TaskServer{}).Where(k, v).First(&server).Error
+	err = db.Instance().Model(model.TaskServer{}).Where(k, v).First(&server).Error
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return nil, nil
@@ -83,7 +83,6 @@ func (r *TaskServerDaoImpl) FindServer(k, v string) (server *model.TaskServer, e
 }
 
 func (r *TaskServerDaoImpl) FindServers(k, v string) (servers []model.TaskServer, err error) {
-	err = global.DBConn.Model(model.TaskServer{}).Where(k, v).Find(&servers).Error
+	err = db.Instance().Model(model.TaskServer{}).Where(k, v).Find(&servers).Error
 	return
 }
-

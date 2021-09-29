@@ -6,6 +6,7 @@ import (
 	pkg "github.com/cilidm/toolbox/str"
 	"github.com/gin-gonic/gin"
 	"pear-admin-go/app/core/cache"
+	"pear-admin-go/app/core/db"
 	dao2 "pear-admin-go/app/dao"
 	"pear-admin-go/app/global"
 	"pear-admin-go/app/global/request"
@@ -127,7 +128,7 @@ func SaveRoleAuth(roleId, authIds string) (err error) {
 		return err
 	}
 	var roleAuth model.RoleAuth
-	tx := global.DBConn.Begin()
+	tx := db.Instance().Begin()
 	for _, v := range authIdMap {
 		roleAuth.AuthID = gconv.Uint(v)
 		roleAuth.RoleID = gconv.Uint64(roleId)

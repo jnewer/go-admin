@@ -9,14 +9,14 @@ import (
 	"testing"
 )
 
-func init(){
+func init() {
 	config.InitConfig("../../config.toml")
 	global.Log = log2.InitLog()
-	global.DBConn = db.InitConn()
+	db.Instance() = db.InitConn()
 }
 
 func TestRunTask(t *testing.T) {
-	task,_ := dao.NewTaskDaoImpl().FindOne(6)
+	task, _ := dao.NewTaskDaoImpl().FindOne(6)
 	RunTask(*task)
 	select {}
 }

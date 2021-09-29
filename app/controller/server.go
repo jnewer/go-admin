@@ -78,4 +78,3 @@ func ServerDel(c *gin.Context) {
 	response.SuccessResp(c).WriteJsonExit()
 	return
 }
-

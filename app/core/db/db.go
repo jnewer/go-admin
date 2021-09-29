@@ -15,15 +15,23 @@ import (
 	"pear-admin-go/app/model"
 )
 
-func InitConn() *gorm.DB {
+var conn *gorm.DB
+
+func Instance() *gorm.DB {
+	if conn == nil {
+		InitConn()
+	}
+	return conn
+}
+
+func InitConn() {
 	switch config.Conf.DB.DBType {
 	case "mysql":
-		return GormMysql()
+		conn = GormMysql()
 	case "sqlite":
-		return GormSqlite()
+		conn = GormSqlite()
 	default:
 		log.Fatal("No DBType")
-		return nil
 	}
 }
 
@@ -90,6 +98,7 @@ func initTables() {
 	checkTableData(&model.SysConf{})
 	checkTableData(&model.PearConfig{})
 	checkTableData(&model.Task{})
+	checkTableData(&model.TaskLog{})
 	checkTableData(&model.TaskServer{})
 }
 

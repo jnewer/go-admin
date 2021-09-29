@@ -3,7 +3,7 @@ package dao
 import (
 	"github.com/cilidm/toolbox/gconv"
 	"github.com/jinzhu/gorm"
-	"pear-admin-go/app/global"
+	"pear-admin-go/app/core/db"
 	"pear-admin-go/app/model"
 	"strings"
 )
@@ -27,13 +27,13 @@ type TaskDaoImpl struct {
 }
 
 func (t TaskDaoImpl) Insert(task model.Task) error {
-	err := global.DBConn.Create(&task).Error
+	err := db.Instance().Create(&task).Error
 	return err
 }
 
 func (t TaskDaoImpl) FindOne(id int) (*model.Task, error) {
 	var task model.Task
-	err := global.DBConn.Model(model.Task{}).First(&task, id).Error
+	err := db.Instance().Model(model.Task{}).First(&task, id).Error
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return nil, nil
@@ -44,18 +44,18 @@ func (t TaskDaoImpl) FindOne(id int) (*model.Task, error) {
 }
 
 func (t TaskDaoImpl) Update(task model.Task, m map[string]interface{}) error {
-	err := global.DBConn.Model(&task).Omit("id").Updates(m).Error
+	err := db.Instance().Model(&task).Omit("id").Updates(m).Error
 	return err
 }
 
 func (t TaskDaoImpl) Delete(task model.Task) error {
-	err := global.DBConn.Delete(&task).Error
+	err := db.Instance().Delete(&task).Error
 	return err
 }
 
 func (t TaskDaoImpl) Findtask(k, v string) (*model.Task, error) {
 	var task model.Task
-	err := global.DBConn.Model(model.TaskServer{}).Where(k, v).First(&task).Error
+	err := db.Instance().Model(model.TaskServer{}).Where(k, v).First(&task).Error
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return nil, nil
@@ -67,7 +67,7 @@ func (t TaskDaoImpl) Findtask(k, v string) (*model.Task, error) {
 
 func (t TaskDaoImpl) Findtasks(k, v string) ([]model.Task, error) {
 	var tasks []model.Task
-	err := global.DBConn.Model(model.TaskServer{}).Where(k, v).Find(&tasks).Error
+	err := db.Instance().Model(model.TaskServer{}).Where(k, v).Find(&tasks).Error
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return nil, nil
@@ -92,7 +92,7 @@ func (t TaskDaoImpl) FindByPage(pageNum, limit int, filters ...interface{}) ([]m
 		tasks []model.Task
 		count int
 	)
-	query := global.DBConn.Model(model.TaskServer{})
+	query := db.Instance().Model(model.TaskServer{})
 	query.Where(strings.Join(queryArr, " AND "), values...).Count(&count)
 	err := query.Where(strings.Join(queryArr, " AND "), values...).Order("id desc").Limit(limit).Offset(offset).Find(&tasks).Error
 	return tasks, count, err

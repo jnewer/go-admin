@@ -35,7 +35,7 @@ func main() {
 
 	global.Log = log2.InitLog()
 
-	global.DBConn = db.InitConn()
+	db.InitConn()
 
 	redis.InitRedis()
 	r := router.InitRouter(staticFs, templateFs)
@@ -68,7 +68,7 @@ func shutDown(s *http.Server) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	err := global.DBConn.Close()
+	err := db.Instance().Close()
 	if err != nil {
 		log.Fatal("Close DB error:", err.Error())
 	}
