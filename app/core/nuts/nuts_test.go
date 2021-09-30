@@ -3,9 +3,8 @@ package nuts
 import (
 	"fmt"
 	"github.com/xujiajun/nutsdb"
-	"log"
+	"strconv"
 	"testing"
-	"time"
 )
 
 func init() {
@@ -27,14 +26,12 @@ func TestInitNuts(t *testing.T) {
 	}
 }
 
-func TestNutsDB(t *testing.T){
-	err := Instance().Set("thiskey","123")
-	if err != nil{
-		log.Fatal(err.Error())
+func TestNutsDB(t *testing.T) {
+	for i := 0; i < 1000; i++ {
+		Instance().Add(fmt.Sprintf("bucket:0000000000%d", i), strconv.Itoa(i))
 	}
-	Instance().Set("abc","aaa",10)
-	fmt.Println(Instance().Get("abc"))
-	time.Sleep(time.Second * 10)
-	fmt.Println(Instance().Get("abc"))
-
+	datas := Instance().GetDatas("bucket", 0, 5)
+	for k,v := range datas{
+		fmt.Println(k,v)
+	}
 }

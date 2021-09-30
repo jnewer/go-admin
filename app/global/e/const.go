@@ -54,4 +54,8 @@ const (
 	ImgHeight    = 80
 	ImgWidth     = 240
 	ImgKeyLength = 4
+
+	Local   = 1
+	Remote  = 2
+	MaxPool = 10
 )

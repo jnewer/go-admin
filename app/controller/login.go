@@ -8,12 +8,12 @@ import (
 	"github.com/mssola/user_agent"
 	"net/http"
 	"pear-admin-go/app/dao"
+	e2 "pear-admin-go/app/global/e"
 	"pear-admin-go/app/global/request"
 	response2 "pear-admin-go/app/global/response"
 	"pear-admin-go/app/model"
 	"pear-admin-go/app/service"
 	"pear-admin-go/app/util/captcha"
-	"pear-admin-go/app/util/e"
 	"pear-admin-go/app/util/validate"
 	"strings"
 	"time"
@@ -31,7 +31,7 @@ func LoginHandler(c *gin.Context) {
 	}
 	isLock := service.CheckLock(req.UserName)
 	if isLock {
-		response2.ErrorResp(c).SetMsg("密码错误次数超限，账号已锁定,请稍后再试").SetType(model.OperOther).Log(e.LoginHandler, req).WriteJsonExit()
+		response2.ErrorResp(c).SetMsg("密码错误次数超限，账号已锁定,请稍后再试").SetType(model.OperOther).Log(e2.LoginHandler, req).WriteJsonExit()
 		return
 	}
 	userAgent := c.Request.Header.Get("User-Agent")
@@ -48,33 +48,33 @@ func LoginHandler(c *gin.Context) {
 
 	if sid, err := service.SignIn(req.UserName, req.Password, c); err != nil {
 		errNums := service.SetPwdErrNum(req.UserName)
-		having := e.MaxErrNum - errNums
+		having := e2.MaxErrNum - errNums
 		info.Msg = "账号或密码错误"
 		info.Status = "0"
 		err = dao.NewLoginInfoImpl().Insert(info)
 		if err != nil {
-			response2.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperOther).Log(e.LoginHandler, req).WriteJsonExit()
+			response2.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperOther).Log(e2.LoginHandler, req).WriteJsonExit()
 			return
 		}
 		if having > 0 {
-			response2.ErrorResp(c).SetMsg("账号或密码不正确,还有"+gconv.String(having)+"次之后账号将锁定").SetType(model.OperOther).Log(e.LoginHandler, req).WriteJsonExit()
+			response2.ErrorResp(c).SetMsg("账号或密码不正确,还有"+gconv.String(having)+"次之后账号将锁定").SetType(model.OperOther).Log(e2.LoginHandler, req).WriteJsonExit()
 			return
 		} else {
-			response2.ErrorResp(c).SetMsg("密码错误次数超限，账号已锁定,请稍后再试").SetType(model.OperOther).Log(e.LoginHandler, req).WriteJsonExit()
+			response2.ErrorResp(c).SetMsg("密码错误次数超限，账号已锁定,请稍后再试").SetType(model.OperOther).Log(e2.LoginHandler, req).WriteJsonExit()
 			return
 		}
 	} else {
 		var online model.AdminOnline
 		err = pkg.CopyFields(&online, info)
 		if err != nil {
-			response2.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperOther).Log(e.LoginHandler, req).WriteJsonExit()
+			response2.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperOther).Log(e2.LoginHandler, req).WriteJsonExit()
 			return
 		}
 		online.SessionID = sid
 		online.Status = "on_line"
 		online.ExpireTime = 1440
 		online.StartTimestamp = time.Now().Unix()
-		online.LastAccessTime = time.Now().Format(e.TimeFormat)
+		online.LastAccessTime = time.Now().Format(e2.TimeFormat)
 		dao.NewAdminOnlineDaoImpl().Delete(sid)
 		dao.NewAdminOnlineDaoImpl().Insert(online)
 		service.RemovePwdErrNum(req.UserName)
@@ -83,9 +83,9 @@ func LoginHandler(c *gin.Context) {
 		info.Status = "1"
 		err := dao.NewLoginInfoImpl().Insert(info)
 		if err != nil {
-			response2.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperOther).Log(e.LoginHandler, req).WriteJsonExit()
+			response2.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperOther).Log(e2.LoginHandler, req).WriteJsonExit()
 		}
-		response2.SuccessResp(c).SetMsg("登陆成功").SetType(model.OperOther).Log(e.LoginHandler, req).WriteJsonExit()
+		response2.SuccessResp(c).SetMsg("登陆成功").SetType(model.OperOther).Log(e2.LoginHandler, req).WriteJsonExit()
 	}
 }
 

@@ -11,9 +11,9 @@ import (
 	"pear-admin-go/app/core/config"
 	"pear-admin-go/app/dao"
 	"pear-admin-go/app/global"
+	e2 "pear-admin-go/app/global/e"
 	"pear-admin-go/app/global/request"
 	"pear-admin-go/app/model"
-	"pear-admin-go/app/util/e"
 	"pear-admin-go/app/util/session"
 	"strings"
 	"sync"
@@ -75,7 +75,7 @@ func CreateAdminService(r request.AdminAddForm, uid int) error {
 	if CheckLoginName(r.LoginName) {
 		return errors.New("用户名已存在")
 	}
-	pwd, salt := pkg.SetPassword(e.DefaultSaltLen, r.Password)
+	pwd, salt := pkg.SetPassword(e2.DefaultSaltLen, r.Password)
 	_, err := dao.NewAdminDaoImpl().Insert(model.Admin{
 		LoginName: r.LoginName,
 		Password:  pwd,
@@ -88,7 +88,7 @@ func CreateAdminService(r request.AdminAddForm, uid int) error {
 		Status:    r.Status,
 		CreateId:  uid,
 		UpdateId:  uid,
-		LastLogin: time.Now().Format(e.TimeFormat),
+		LastLogin: time.Now().Format(e2.TimeFormat),
 	})
 	if err != nil {
 		global.Log.Error("CreateAdminService.Insert", zap.Error(err))
@@ -215,7 +215,7 @@ func IsAdmin(user *model.Admin) bool {
 }
 
 func GetUid(c *gin.Context) int {
-	uid := session.Get(c, e.Auth)
+	uid := session.Get(c, e2.Auth)
 	if uid != nil {
 		return gconv.Int(uid)
 	}
@@ -224,7 +224,7 @@ func GetUid(c *gin.Context) int {
 
 // 判断用户是否已经登录
 func IsSignedIn(c *gin.Context) bool {
-	uid := session.Get(c, e.Auth)
+	uid := session.Get(c, e2.Auth)
 	return uid != nil
 }
 
@@ -252,17 +252,17 @@ var SessionList sync.Map
 
 //保存用户信息到session
 func SaveUserToSession(admin model.Admin, c *gin.Context) (string, error) {
-	err := session.Del(c, e.Auth)
+	err := session.Del(c, e2.Auth)
 	if err != nil {
 		return "", err
 	}
-	err = session.Set(c, e.Auth, admin.ID)
+	err = session.Set(c, e2.Auth, admin.ID)
 	if err != nil {
 		global.Log.Warn(err.Error())
 		return "", err
 	}
 	tmp, _ := json.Marshal(admin)
-	err = session.Set(c, e.AdminInfo, string(tmp))
+	err = session.Set(c, e2.AdminInfo, string(tmp))
 	if err != nil {
 		global.Log.Warn(err.Error())
 		return "", err
@@ -274,9 +274,9 @@ func SaveUserToSession(admin model.Admin, c *gin.Context) (string, error) {
 //清空用户菜单缓存
 func ClearMenuCache(user *model.Admin) {
 	if IsAdmin(user) {
-		cache.Instance().Delete(e.Menu)
+		cache.Instance().Delete(e2.Menu)
 	} else {
-		cache.Instance().Delete(e.Menu + gconv.String(user.ID))
+		cache.Instance().Delete(e2.Menu + gconv.String(user.ID))
 	}
 }
 
@@ -291,11 +291,11 @@ func SignOut(c *gin.Context) error {
 	if err != nil {
 		return err
 	}
-	err = session.Del(c, e.Auth)
+	err = session.Del(c, e2.Auth)
 	if err != nil {
 		return err
 	}
-	err = session.Del(c, e.AdminInfo)
+	err = session.Del(c, e2.AdminInfo)
 	if err != nil {
 		return err
 	}
@@ -313,7 +313,7 @@ func CheckLoginName(loginName string) bool {
 
 // 获得用户信息详情
 func GetProfile(c *gin.Context) *model.Admin {
-	tmp := session.Get(c, e.AdminInfo)
+	tmp := session.Get(c, e2.AdminInfo)
 	if tmp == nil {
 		return nil
 	}
@@ -415,7 +415,7 @@ func PwdEditHandlerService(profile request.PasswordForm, c *gin.Context) error {
 	}
 
 	//新校验密码
-	pwd, salt := pkg.SetPassword(e.DefaultSaltLen, profile.NewPwd)
+	pwd, salt := pkg.SetPassword(e2.DefaultSaltLen, profile.NewPwd)
 	err = dao.NewAdminDaoImpl().Update(user, map[string]interface{}{
 		"password": pwd,
 		"salt":     salt,

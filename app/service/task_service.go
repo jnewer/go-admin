@@ -15,6 +15,7 @@ import (
 	"pear-admin-go/app/util/check"
 	"pear-admin-go/app/util/pool"
 	"pear-admin-go/app/util/remote"
+	"pear-admin-go/app/util/runtask"
 	"runtime"
 	"strings"
 	"time"
@@ -48,12 +49,18 @@ func TaskAdd(f request.TaskForm) error {
 	return nil
 }
 
+func RunTaskV2(task model.Task) {
+	runtask.NewRunTask(task).SetSourceClient().SetDstClient().Run()
+}
+
 func RunTask(task model.Task) {
 	var sid int
-	if task.SourceType == 2 {
+	if task.SourceType == 2 && task.DstType == 1 {
 		sid = task.SourceServer
-	} else if task.DstType == 2 {
+	} else if task.DstType == 2 && task.SourceType == 1 {
 		sid = task.DstServer
+	} else if task.SourceType == 2 && task.DstType == 2 {
+
 	}
 	s, err := dao.NewTaskServerDaoImpl().FindOne(sid)
 	if err != nil {

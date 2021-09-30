@@ -5,14 +5,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"html/template"
 	"net/http"
+	e2 "pear-admin-go/app/global/e"
 	"pear-admin-go/app/service"
-	"pear-admin-go/app/util/e"
 )
 
 func Index(c *gin.Context) {
 	user := service.GetProfile(c)
 	if pkg.CheckNotExist(service.GetImgSavePath(user.Avatar)) {
-		user.Avatar = e.DefaultAvatar
+		user.Avatar = e2.DefaultAvatar
 	}
 	site, _ := service.GetSiteConf()
 	c.HTML(http.StatusOK, "index.html", gin.H{

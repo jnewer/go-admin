@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"pear-admin-go/app/core/cache"
+	e2 "pear-admin-go/app/global/e"
 	"pear-admin-go/app/service"
-	"pear-admin-go/app/util/e"
 	"strings"
 )
 
@@ -38,13 +38,13 @@ func AuthByPage(c *gin.Context) bool {
 		url = strings.TrimRight(url, "/")
 	}
 
-	allowAuthArr := strings.Split(e.AllowAuth, ",") // 校验公共路径
+	allowAuthArr := strings.Split(e2.AllowAuth, ",") // 校验公共路径
 	if pkg.IsContain(allowAuthArr, url) {
 		return true
 	}
 
 	var allowUrlArr []string
-	menuCache, found := cache.Instance().Get(e.MenuCache + gconv.String(user.ID))
+	menuCache, found := cache.Instance().Get(e2.MenuCache + gconv.String(user.ID))
 	if found && menuCache != nil { //从缓存取菜单
 		menu := menuCache.(service.CacheMenuV2)
 		allowUrlArr = strings.Split(menu.AllowUrl, ",")

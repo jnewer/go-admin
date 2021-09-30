@@ -6,10 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 	dao2 "pear-admin-go/app/dao"
 	"pear-admin-go/app/global"
+	e2 "pear-admin-go/app/global/e"
 	"pear-admin-go/app/global/request"
 	"pear-admin-go/app/model"
-	"pear-admin-go/app/util/e"
-
 	"time"
 )
 
@@ -40,7 +39,7 @@ func CreateOperLog(c *gin.Context, f model.OperForm) error {
 	oper.OperIp = c.ClientIP()
 	oper.OperLocation = ip.GetCityByIp(oper.OperIp)
 	oper.ErrorMsg = f.ErrorMsg
-	oper.OperTime = time.Now().Format(e.TimeFormat)
+	oper.OperTime = time.Now().Format(e2.TimeFormat)
 	if err := dao2.NewOperLogDaoImpl().Insert(oper); err != nil {
 		return err
 	}

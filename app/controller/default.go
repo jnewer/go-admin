@@ -10,10 +10,10 @@ import (
 	"path/filepath"
 	"pear-admin-go/app/core/cache"
 	"pear-admin-go/app/core/config"
+	e2 "pear-admin-go/app/global/e"
 	"pear-admin-go/app/global/response"
 	"pear-admin-go/app/model"
 	"pear-admin-go/app/service"
-	"pear-admin-go/app/util/e"
 	"strings"
 	"time"
 )
@@ -24,26 +24,26 @@ func Upload(c *gin.Context) {
 		response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperAdd).WriteJsonExit()
 		return
 	}
-	if file.Size > e.DefUploadSize {
-		response.ErrorResp(c).SetMsg("文件大小超限").SetType(model.OperAdd).Log(e.DefaultUpload, file).WriteJsonExit()
+	if file.Size > e2.DefUploadSize {
+		response.ErrorResp(c).SetMsg("文件大小超限").SetType(model.OperAdd).Log(e2.DefaultUpload, file).WriteJsonExit()
 		return
 	}
-	day := time.Now().Format(e.TimeFormatDay)
+	day := time.Now().Format(e2.TimeFormatDay)
 	savePath := filepath.Join(config.Conf.App.ImgSavePath, day) // 按年月日归档保存
 	err = f.IsNotExistMkDir(savePath)
 	if err != nil {
-		response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperAdd).Log(e.DefaultUpload, file).WriteJsonExit()
+		response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperAdd).Log(e2.DefaultUpload, file).WriteJsonExit()
 		return
 	}
 	if err := c.SaveUploadedFile(file, filepath.Join(savePath, file.Filename)); err != nil {
-		response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperAdd).Log(e.DefaultUpload, file).WriteJsonExit()
+		response.ErrorResp(c).SetMsg(err.Error()).SetType(model.OperAdd).Log(e2.DefaultUpload, file).WriteJsonExit()
 		return
 	}
 	backFilePath := filepath.Join(filepath.Join(config.Conf.App.ImgUrlPath, day), file.Filename)
 	if OS.IsWindows() {
 		backFilePath = strings.ReplaceAll(backFilePath, "\\", "/")
 	}
-	response.SuccessResp(c).SetData(backFilePath).SetType(model.OperAdd).Log(e.DefaultUpload, file).WriteJsonExit()
+	response.SuccessResp(c).SetData(backFilePath).SetType(model.OperAdd).Log(e2.DefaultUpload, file).WriteJsonExit()
 }
 
 func Pear(c *gin.Context) {
@@ -51,7 +51,7 @@ func Pear(c *gin.Context) {
 		data *model.PearConfigForm
 		err  error
 	)
-	conf, found := cache.Instance().Get(e.PearConfigCache)
+	conf, found := cache.Instance().Get(e2.PearConfigCache)
 	if found && conf != nil {
 		d, ok := conf.(model.PearConfigForm)
 		if ok {

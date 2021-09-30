@@ -66,7 +66,7 @@ func (this *INuts) Set(key, val string, ttl ...uint32) error {
 	if len(ttl) > 0 {
 		tl = ttl[0]
 	}
-	if err := Instance().nuts.Update(func(t *nutsdb.Tx) error {
+	if err := this.nuts.Update(func(t *nutsdb.Tx) error {
 		if err := t.Put(this.bucket, []byte(key), []byte(val), tl); err != nil {
 			return err
 		}
@@ -75,6 +75,16 @@ func (this *INuts) Set(key, val string, ttl ...uint32) error {
 		return err
 	}
 	return nil
+}
+
+func (this *INuts) Add(key, val string) *INuts {
+	_ = this.nuts.Update(func(t *nutsdb.Tx) error {
+		if err := t.Put(this.bucket, []byte(key), []byte(val), 0); err != nil {
+			global.Log.Error("NutsDB.Add", zap.Error(err))
+		}
+		return nil
+	})
+	return this
 }
 
 func (this *INuts) Delete(key string) error {
@@ -87,6 +97,44 @@ func (this *INuts) Delete(key string) error {
 		return err
 	}
 	return nil
+}
+
+func (this *INuts) GetDatas(prefix string, offset, limit int) map[string]string {
+	data := make(map[string]string)
+	if err := this.nuts.View(
+		func(t *nutsdb.Tx) error {
+			if entries, _, err := t.PrefixSearchScan(this.bucket, []byte(prefix), "", offset, limit); err != nil {
+				return err
+			} else {
+				for _, entry := range entries {
+					data[string(entry.Key)] = string(entry.Value)
+				}
+			}
+			return nil
+		}); err != nil {
+		global.Log.Error("Nuts.FindByPage", zap.Error(err))
+		return data
+	}
+	return data
+}
+
+func (this *INuts) FindByPage(start, end string) map[string]string {
+	data := make(map[string]string)
+	if err := this.nuts.View(
+		func(t *nutsdb.Tx) error {
+			if entries, err := t.RangeScan(this.bucket, []byte(start), []byte(end)); err != nil {
+				return err
+			} else {
+				for _, entry := range entries {
+					data[string(entry.Key)] = string(entry.Value)
+				}
+			}
+			return nil
+		}); err != nil {
+		global.Log.Error("Nuts.FindByPage", zap.Error(err))
+		return data
+	}
+	return data
 }
 
 func (this *INuts) Close() {

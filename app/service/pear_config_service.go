@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"pear-admin-go/app/core/cache"
 	"pear-admin-go/app/dao"
+	e2 "pear-admin-go/app/global/e"
 	"pear-admin-go/app/model"
-	"pear-admin-go/app/util/e"
 )
 
 func GetPearConfig() (*model.PearConfigForm, error) {
@@ -18,6 +18,6 @@ func GetPearConfig() (*model.PearConfigForm, error) {
 	if err != nil {
 		return nil, err
 	}
-	cache.Instance().Set(e.PearConfigCache, data, 0)
+	cache.Instance().Set(e2.PearConfigCache, data, 0)
 	return &data, nil
 }

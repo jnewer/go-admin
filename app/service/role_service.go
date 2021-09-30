@@ -9,9 +9,9 @@ import (
 	"pear-admin-go/app/core/db"
 	dao2 "pear-admin-go/app/dao"
 	"pear-admin-go/app/global"
+	e2 "pear-admin-go/app/global/e"
 	"pear-admin-go/app/global/request"
 	"pear-admin-go/app/model"
-	"pear-admin-go/app/util/e"
 	"strings"
 )
 
@@ -46,8 +46,8 @@ func RoleListJsonService(f request.RoleForm) (count int, data []map[string]inter
 			ID:        gconv.Int(v.ID),
 			RoleName:  v.RoleName,
 			Detail:    v.Detail,
-			CreatedAt: v.CreatedAt.Format(e.TimeFormat),
-			UpdatedAt: v.UpdatedAt.Format(e.TimeFormat),
+			CreatedAt: v.CreatedAt.Format(e2.TimeFormat),
+			UpdatedAt: v.UpdatedAt.Format(e2.TimeFormat),
 		}, "json"))
 	}
 	return count, data, nil
@@ -147,7 +147,7 @@ func SaveRoleAuth(roleId, authIds string) (err error) {
 func deleteMenuCache() {
 	items := cache.Instance().Items()
 	for k, _ := range items {
-		if strings.HasPrefix(k, e.MenuCache) {
+		if strings.HasPrefix(k, e2.MenuCache) {
 			cache.Instance().Delete(k)
 		}
 	}
