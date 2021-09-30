@@ -211,11 +211,7 @@ func AdminDeleteService(uid string, c *gin.Context) error {
 
 // 判断是否是超级管理员
 func IsAdmin(user *model.Admin) bool {
-	if user.ID == 1 && user.Level == 99 { // 只有id = 1 && level = 99 的超级管理员
-		return true
-	} else {
-		return false
-	}
+	return user.ID == 1 && user.Level == 99 // 只有id = 1 && level = 99 的超级管理员
 }
 
 func GetUid(c *gin.Context) int {
@@ -229,10 +225,7 @@ func GetUid(c *gin.Context) int {
 // 判断用户是否已经登录
 func IsSignedIn(c *gin.Context) bool {
 	uid := session.Get(c, e.Auth)
-	if uid != nil {
-		return true
-	}
-	return false
+	return uid != nil
 }
 
 // 用户登录，成功返回用户信息，否则返回nil; passport应当会md5值字符串

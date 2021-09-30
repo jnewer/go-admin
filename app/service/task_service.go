@@ -12,6 +12,7 @@ import (
 	"pear-admin-go/app/global"
 	"pear-admin-go/app/global/request"
 	"pear-admin-go/app/model"
+	"pear-admin-go/app/util/check"
 	"pear-admin-go/app/util/pool"
 	"pear-admin-go/app/util/remote"
 	"runtime"
@@ -20,16 +21,6 @@ import (
 )
 
 func TaskJson(f request.TaskPage) ([]model.Task, int, error) {
-	//filters := make([]interface{}, 0)
-	//if f.ServerName != "" {
-	//	filters = append(filters, "server_name LIKE ?", "%"+f.ServerName+"%")
-	//}
-	//if f.ServerIp != "" {
-	//	filters = append(filters, "server_ip LIKE ?", "%"+f.ServerIp+"%")
-	//}
-	//if f.Detail != "" {
-	//	filters = append(filters, "detail LIKE ?", "%"+f.Detail+"%")
-	//}
 	ts, count, err := dao.NewTaskDaoImpl().FindByPage(f.Page, f.Limit)
 	if err != nil {
 		return nil, 0, err
@@ -58,7 +49,13 @@ func TaskAdd(f request.TaskForm) error {
 }
 
 func RunTask(task model.Task) {
-	s, err := dao.NewTaskServerDaoImpl().FindOne(task.DstServer)
+	var sid int
+	if task.SourceType == 2 {
+		sid = task.SourceServer
+	} else if task.DstType == 2 {
+		sid = task.DstServer
+	}
+	s, err := dao.NewTaskServerDaoImpl().FindOne(sid)
 	if err != nil {
 		global.Log.Error("RunTask.FindOne", zap.Error(err))
 		return
@@ -72,14 +69,15 @@ func RunTask(task model.Task) {
 		global.Log.Error("RunTask.scli.Instance", zap.Error(err))
 		return
 	}
-	rm := remote.NewRemote(task.Id, task.DstServer, task.SourcePath, task.DstPath, nil, cli)
 	fp = pool.NewPool(10)
-	fcount := WalkPathV2(task.SourcePath, rm, task.SourcePath)
-	//fcount, err := dao.NewTaskLogDaoImpl().CountByTaskId(task.Id)
-	//if err != nil {
-	//	global.Log.Error("RunTask.CountByTaskId", zap.Error(err))
-	//	return
-	//}
+	var fcount int
+	if task.SourceType == 1 && task.DstType == 2 {
+		rm := remote.NewRemote(task.Id, task.DstServer, task.SourcePath, task.DstPath, nil, cli)
+		fcount = WalkLocalPathV2(task.SourcePath, rm, task.SourcePath)
+	} else if task.SourceType == 2 && task.DstType == 1 {
+		remote.NewRemote(task.Id, task.SourceServer, check.CheckWinPath(task.SourcePath), check.CheckWinPath(task.DstPath), cli, nil).
+			WalkRemotePath(task.SourcePath, fp)
+	}
 	err = dao.NewTaskDaoImpl().Update(task, map[string]interface{}{"task_file_num": fcount})
 	if err != nil {
 		global.Log.Error("RunTask.Update", zap.Error(err))
@@ -89,7 +87,7 @@ func RunTask(task model.Task) {
 
 var fp *pool.Pool
 
-func WalkPathV2(dir string, rm *remote.Remote, sourceDir string) int {
+func WalkLocalPathV2(dir string, rm *remote.Remote, sourceDir string) int {
 	count := 0
 	_ = filepath.Walk(dir, func(v string, info fs.FileInfo, err error) error {
 		if err != nil {
@@ -129,16 +127,13 @@ func WalkPathV2(dir string, rm *remote.Remote, sourceDir string) int {
 }
 
 // 递归方式无法准确获取文件查询的完成时间
-func WalkPath(dir string, rm *remote.Remote, sourceDir string) {
+func WalkLocalPath(dir string, rm *remote.Remote, sourceDir string) {
 	paths, err := filepath.Glob(strings.TrimRight(dir, "/") + "/*")
 	if err != nil {
 		global.Log.Error("WalkPath.Glob", zap.Error(err))
 		return
 	}
 	for _, v := range paths {
-		//if str.IsContain(conf.Conf.FileInfo.ExceptDir, v) || util.HasPathPrefix(conf.Conf.FileInfo.ExceptDir, v) {
-		//	continue
-		//}
 		stat, err := os.Stat(v)
 		if err != nil {
 			global.Log.Error("WalkPath.os.Stat", zap.Error(err))
@@ -151,9 +146,8 @@ func WalkPath(dir string, rm *remote.Remote, sourceDir string) {
 				global.Log.Error("WalkPath.rm.Mkdir", zap.Error(err))
 				continue
 			}
-			WalkPath(v, rm, sourceDir)
+			WalkLocalPath(v, rm, sourceDir)
 		} else {
-			//global.Log.Info(fmt.Sprintf("发现文件 【%s】", v))
 			fp.Add(1)
 			go func(v string, size int64) {
 				defer fp.Done()

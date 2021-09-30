@@ -6,7 +6,6 @@ import (
 )
 
 var (
-	//DBConn    *gorm.DB
 	Log       *zap.Logger
 	RedisConn *redis.Client
 )

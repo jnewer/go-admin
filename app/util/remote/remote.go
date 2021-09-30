@@ -3,6 +3,8 @@ package remote
 import (
 	"fmt"
 	"github.com/cilidm/toolbox/OS"
+	"github.com/cilidm/toolbox/file"
+	"github.com/cilidm/toolbox/logging"
 	"github.com/pkg/sftp"
 	"go.uber.org/zap"
 	"os"
@@ -10,14 +12,16 @@ import (
 	"pear-admin-go/app/dao"
 	"pear-admin-go/app/global"
 	"pear-admin-go/app/model"
+	"pear-admin-go/app/util/check"
+	"pear-admin-go/app/util/pool"
 	"runtime"
 	"strings"
 	"time"
 )
 
 type Remote struct {
-	taskId       int
-	serverId     int
+	taskId       int          // 添加log时使用
+	serverId     int          // 添加log时使用
 	sourcePath   string       // 源路径
 	dstPath      string       // 目标路径
 	sourceClient *sftp.Client // 源服务器连接
@@ -90,6 +94,76 @@ func (this *Remote) LocalToRemote(fname string, fsize int64) error {
 	return nil
 }
 
+func (this *Remote) RemoteToRemote() {
+
+}
+
+// 远端->本地 使用 sourceClient
+func (this *Remote) RemoteToLocal(fname string, fsize int64) error { // 本地文件夹
+	dstFile := path.Join(this.dstPath, strings.ReplaceAll(fname, this.sourcePath, "")) // 需要保存的本地文件地址
+	has, err := check.CheckFile(dstFile)                                               // 是否已存在
+	if err != nil {
+		global.Log.Error("RemoteToLocal.CheckFile", zap.Error(err))
+		return err
+	}
+	if has != nil && has.Size() == fsize {
+		global.Log.Debug(fmt.Sprintf("文件%s已存在", dstFile))
+		return nil
+	}
+	dir, _ := path.Split(dstFile)
+	err = file.IsNotExistMkDir(dir)
+	if err != nil {
+		global.Log.Error("RemoteToLocal.IsNotExistMkDir", zap.Error(err))
+		return err
+	}
+
+	srcFile, err := this.sourceClient.Open(fname)
+	if err != nil {
+		global.Log.Error("RemoteToLocal.sourceClient.Open", zap.Error(err))
+		return err
+	}
+	defer srcFile.Close()
+	lf, err := os.Create(dstFile)
+	if err != nil {
+		return err
+	}
+	defer lf.Close()
+
+	if _, err = srcFile.WriteTo(lf); err != nil {
+		return err
+	}
+	global.Log.Info(fmt.Sprintf("copy %s finished!", srcFile.Name()))
+	return nil
+}
+
+func (this *Remote) WalkRemotePath(dirPath string, fp *pool.Pool) {
+	globPath := pathJoin(dirPath)
+	files, err := this.sourceClient.Glob(globPath)
+	if err != nil {
+		logging.Error(err)
+		return
+	}
+	for _, v := range files {
+		stat, err := this.sourceClient.Stat(v)
+		if err != nil {
+			global.Log.Error("WalkRemotePath.this.sourceClient.Stat", zap.Error(err))
+			continue
+		}
+		if stat.IsDir() {
+			this.WalkRemotePath(v, fp)
+		} else {
+			fp.Add(1)
+			go func(v string, size int64) {
+				defer fp.Done()
+				err = this.RemoteToLocal(v, size)
+				if err != nil {
+					global.Log.Error("WalkRemotePath.RemoteToLocal", zap.Error(err))
+				}
+			}(v, stat.Size())
+		}
+	}
+}
+
 func (this *Remote) Mkdir(p string) error {
 	if runtime.GOOS == "windows" {
 		p = strings.ReplaceAll(p, "\\", "/")
@@ -103,10 +177,14 @@ func (this *Remote) Mkdir(p string) error {
 	return nil
 }
 
-func (this *Remote) RemoteToRemote() {
-
-}
-
-func (this *Remote) RemoteToLocal() {
-
+func pathJoin(p string) (np string) {
+	if strings.HasSuffix(p, "/") == false {
+		p = p + "/"
+	}
+	if OS.IsWindows() {
+		np = strings.ReplaceAll(path.Join(p, "*"), "\\", "/")
+	} else {
+		np = path.Join(p, "*")
+	}
+	return
 }

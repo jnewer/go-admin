@@ -16,7 +16,7 @@ func init() {
 }
 
 func TestRunTask(t *testing.T) {
-	task, _ := dao.NewTaskDaoImpl().FindOne(14)
+	task, _ := dao.NewTaskDaoImpl().FindOne(17)
 	RunTask(*task)
 	select {}
 }
