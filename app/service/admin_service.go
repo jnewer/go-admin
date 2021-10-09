@@ -9,8 +9,8 @@ import (
 	"go.uber.org/zap"
 	"pear-admin-go/app/core/cache"
 	"pear-admin-go/app/core/config"
+	"pear-admin-go/app/core/log"
 	"pear-admin-go/app/dao"
-	"pear-admin-go/app/global"
 	e2 "pear-admin-go/app/global/e"
 	"pear-admin-go/app/global/request"
 	"pear-admin-go/app/model"
@@ -50,7 +50,7 @@ func AdminListJsonService(f request.AdminForm) (count int, data []map[string]int
 	filters := BuildFilter(f)
 	list, count, err := dao.NewAdminDaoImpl().FindByPage(f.Page, f.Limit, filters...)
 	if err != nil {
-		global.Log.Error("AdminListJsonService.FindByPage", zap.Error(err))
+		log.Instance().Error("AdminListJsonService.FindByPage", zap.Error(err))
 		return count, data, err
 	}
 	for _, v := range list {
@@ -91,7 +91,7 @@ func CreateAdminService(r request.AdminAddForm, uid int) error {
 		LastLogin: time.Now().Format(e2.TimeFormat),
 	})
 	if err != nil {
-		global.Log.Error("CreateAdminService.Insert", zap.Error(err))
+		log.Instance().Error("CreateAdminService.Insert", zap.Error(err))
 		return err
 	}
 	return nil
@@ -102,7 +102,7 @@ func UpdateAdminStatus(id, status string) error {
 	attr["status"] = status
 	admin, err := dao.NewAdminDaoImpl().FindAdmin("id = ?", id)
 	if err != nil {
-		global.Log.Error("UpdateAdminStatus.FindAdmin", zap.Error(err))
+		log.Instance().Error("UpdateAdminStatus.FindAdmin", zap.Error(err))
 		return err
 	}
 	if admin.ID < 1 {
@@ -130,7 +130,7 @@ func UpdateAdminAttrService(f request.AdminEditForm) error {
 	}
 	admin, err := dao.NewAdminDaoImpl().FindAdmin("id = ?", f.ID)
 	if err != nil {
-		global.Log.Error("UpdateAdminAttrService.FindAdmin", zap.Error(err))
+		log.Instance().Error("UpdateAdminAttrService.FindAdmin", zap.Error(err))
 		return err
 	}
 	if admin.ID < 1 {
@@ -138,7 +138,7 @@ func UpdateAdminAttrService(f request.AdminEditForm) error {
 	}
 	err = dao.NewAdminDaoImpl().Update(admin, attr)
 	if err != nil {
-		global.Log.Error("UpdateAdminAttrService.Update", zap.Error(err))
+		log.Instance().Error("UpdateAdminAttrService.Update", zap.Error(err))
 		return err
 	}
 	return nil
@@ -147,17 +147,17 @@ func UpdateAdminAttrService(f request.AdminEditForm) error {
 func AdminEditService(uid string) (show model.AdminShow, rolesShow []model.RoleEditShow, err error) {
 	admin, err := dao.NewAdminDaoImpl().FindAdmin("id = ?", uid)
 	if err != nil {
-		global.Log.Error("AdminEditService.FindAdmin", zap.Error(err))
+		log.Instance().Error("AdminEditService.FindAdmin", zap.Error(err))
 		return show, rolesShow, err
 	}
 	err = pkg.CopyFields(&show, admin)
 	if err != nil {
-		global.Log.Error("AdminEditService.CopyFields", zap.Error(err))
+		log.Instance().Error("AdminEditService.CopyFields", zap.Error(err))
 		return show, rolesShow, err
 	}
 	roles, err := dao.NewRoleDaoImpl().FindRoles("status = ?", "1") // 查找全部的分组
 	if err != nil {
-		global.Log.Error("AdminEditService.FindRoles", zap.Error(err))
+		log.Instance().Error("AdminEditService.FindRoles", zap.Error(err))
 		return show, rolesShow, err
 	}
 	check := strings.Split(admin.RoleIds, ",")
@@ -183,7 +183,7 @@ func AdminAddHandlerService(roleIds, status string, f request.AdminAddForm, c *g
 	f.RoleIds = roleIds
 	f.Status = gconv.Int(status)
 	if err := CreateAdminService(f, GetUid(c)); err != nil {
-		global.Log.Error("AdminAddHandlerService.CreateAdminService", zap.Error(err))
+		log.Instance().Error("AdminAddHandlerService.CreateAdminService", zap.Error(err))
 		return err
 	}
 	return nil
@@ -192,7 +192,7 @@ func AdminAddHandlerService(roleIds, status string, f request.AdminAddForm, c *g
 func AdminDeleteService(uid string, c *gin.Context) error {
 	admin, err := dao.NewAdminDaoImpl().FindAdmin("id = ?", uid)
 	if err != nil {
-		global.Log.Error("AdminDeleteService.FindAdmin", zap.Error(err))
+		log.Instance().Error("AdminDeleteService.FindAdmin", zap.Error(err))
 		return err
 	}
 	if admin.ID == 1 || admin.Level == 99 {
@@ -203,7 +203,7 @@ func AdminDeleteService(uid string, c *gin.Context) error {
 		return errors.New("不能删除本人账号")
 	}
 	if err := dao.NewAdminDaoImpl().Delete(gconv.Int(uid)); err != nil {
-		global.Log.Error("AdminDeleteService.Delete", zap.Error(err))
+		log.Instance().Error("AdminDeleteService.Delete", zap.Error(err))
 		return err
 	}
 	return nil
@@ -258,13 +258,13 @@ func SaveUserToSession(admin model.Admin, c *gin.Context) (string, error) {
 	}
 	err = session.Set(c, e2.Auth, admin.ID)
 	if err != nil {
-		global.Log.Warn(err.Error())
+		log.Instance().Warn(err.Error())
 		return "", err
 	}
 	tmp, _ := json.Marshal(admin)
 	err = session.Set(c, e2.AdminInfo, string(tmp))
 	if err != nil {
-		global.Log.Warn(err.Error())
+		log.Instance().Warn(err.Error())
 		return "", err
 	}
 	SessionList.Store(admin.ID, c)

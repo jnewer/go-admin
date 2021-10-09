@@ -10,9 +10,10 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"pear-admin-go/app/core/log"
 	"pear-admin-go/app/core/scli"
 	"pear-admin-go/app/dao"
-	"pear-admin-go/app/global"
+
 	"pear-admin-go/app/global/e"
 	"pear-admin-go/app/model"
 	"pear-admin-go/app/util/check"
@@ -40,7 +41,7 @@ func (this *RunTask) SetSourceClient() *RunTask {
 	}
 	c, err := this.getClient(this.task.SourceServer)
 	if err != nil {
-		global.Log.Error("SetSourceClient.getClient", zap.Error(err))
+		log.Instance().Error("SetSourceClient.getClient", zap.Error(err))
 		return this
 	}
 	this.sourceClient = c
@@ -53,7 +54,7 @@ func (this *RunTask) SetDstClient() *RunTask {
 	}
 	c, err := this.getClient(this.task.DstServer)
 	if err != nil {
-		global.Log.Error("SetSourceClient.getClient", zap.Error(err))
+		log.Instance().Error("SetSourceClient.getClient", zap.Error(err))
 		return this
 	}
 	this.dstClient = c
@@ -82,7 +83,7 @@ func (this *RunTask) Run() {
 	}
 	err := dao.NewTaskDaoImpl().Update(this.task, map[string]interface{}{"task_file_num": this.counter})
 	if err != nil {
-		global.Log.Error("Run.Update", zap.Error(err))
+		log.Instance().Error("Run.Update", zap.Error(err))
 	}
 }
 
@@ -98,13 +99,13 @@ func (this *RunTask) WalkRemotePath(dirPath string, runType int) {
 	globPath := pathJoin(dirPath)
 	files, err := this.sourceClient.Glob(globPath)
 	if err != nil {
-		global.Log.Error("WalkRemotePath.this.sourceClient.Glob", zap.Error(err))
+		log.Instance().Error("WalkRemotePath.this.sourceClient.Glob", zap.Error(err))
 		return
 	}
 	for _, v := range files {
 		stat, err := this.sourceClient.Stat(v)
 		if err != nil {
-			global.Log.Error("WalkRemotePath.this.sourceClient.Stat", zap.Error(err))
+			log.Instance().Error("WalkRemotePath.this.sourceClient.Stat", zap.Error(err))
 			continue
 		}
 		if stat.IsDir() {
@@ -112,7 +113,7 @@ func (this *RunTask) WalkRemotePath(dirPath string, runType int) {
 				dname := string([]rune(strings.ReplaceAll(v, this.task.SourcePath, ""))[1:])
 				err = this.MkRemotedir(dname)
 				if err != nil {
-					global.Log.Error("WalkRemotePath.MkRemotedir", zap.Error(err))
+					log.Instance().Error("WalkRemotePath.MkRemotedir", zap.Error(err))
 					return
 				}
 			}
@@ -128,7 +129,7 @@ func (this *RunTask) WalkRemotePath(dirPath string, runType int) {
 					err = this.RemoteSendRemote(v, size)
 				}
 				if err != nil {
-					global.Log.Error("WalkRemotePath.RemoteToLocal", zap.Error(err))
+					log.Instance().Error("WalkRemotePath.RemoteToLocal", zap.Error(err))
 				}
 			}(v, stat.Size())
 		}
@@ -140,7 +141,7 @@ func (this *RunTask) RemoteSendRemote(fname string, fsize int64) error {
 	rf := path.Join(this.task.DstPath, newName) // 文件在目标服务器的路径及名称
 	has, err := this.dstClient.Stat(rf)
 	if err == nil && (has.Size() == fsize) {
-		global.Log.Debug(fmt.Sprintf("文件%s已存在", rf))
+		log.Instance().Debug(fmt.Sprintf("文件%s已存在", rf))
 		return nil
 	}
 	err = this.dstClient.MkdirAll(this.task.DstPath)
@@ -153,14 +154,14 @@ func (this *RunTask) RemoteSendRemote(fname string, fsize int64) error {
 	}
 	srcFile, err := this.sourceClient.Open(fname)
 	if err != nil {
-		global.Log.Error("RemoteToLocal.sourceClient.Open", zap.Error(err))
+		log.Instance().Error("RemoteToLocal.sourceClient.Open", zap.Error(err))
 		return err
 	}
 	defer srcFile.Close()
 
 	dstFile, err := this.dstClient.Create(rf) // 如果文件存在，create会清空原文件 openfile会追加
 	if err != nil {
-		global.Log.Error("RemoteSendRemote.this.dstClient.Create", zap.Error(err))
+		log.Instance().Error("RemoteSendRemote.this.dstClient.Create", zap.Error(err))
 		return err
 	}
 	defer dstFile.Close()
@@ -173,7 +174,7 @@ func (this *RunTask) RemoteSendRemote(fname string, fsize int64) error {
 		}
 		dstFile.Write(buf[:n]) // 读多少 写多少
 	}
-	global.Log.Info(fmt.Sprintf("【%s】传输完毕", fname))
+	log.Instance().Info(fmt.Sprintf("【%s】传输完毕", fname))
 	err = dao.NewTaskLogDaoImpl().Insert(model.TaskLog{
 		TaskId:     this.task.Id,
 		ServerId:   this.task.DstServer,
@@ -183,7 +184,7 @@ func (this *RunTask) RemoteSendRemote(fname string, fsize int64) error {
 		CreateTime: time.Now(),
 	})
 	if err != nil {
-		global.Log.Error("RemoteSendRemote.dao.NewTaskLogDaoImpl.Insert", zap.Error(err))
+		log.Instance().Error("RemoteSendRemote.dao.NewTaskLogDaoImpl.Insert", zap.Error(err))
 		return err
 	}
 	return nil
@@ -194,23 +195,23 @@ func (this *RunTask) RemoteSendLocal(fname string, fsize int64) error { // 本�
 	dstFile := path.Join(this.task.DstPath, strings.ReplaceAll(fname, this.task.SourcePath, "")) // 需要保存的本地文件地址
 	has, err := check.CheckFile(dstFile)                                                         // 是否已存在
 	if err != nil {
-		global.Log.Error("RemoteToLocal.CheckFile", zap.Error(err))
+		log.Instance().Error("RemoteToLocal.CheckFile", zap.Error(err))
 		return err
 	}
 	if has != nil && has.Size() == fsize {
-		global.Log.Debug(fmt.Sprintf("文件%s已存在", dstFile))
+		log.Instance().Debug(fmt.Sprintf("文件%s已存在", dstFile))
 		return nil
 	}
 	dir, _ := path.Split(dstFile)
 	err = file.IsNotExistMkDir(dir)
 	if err != nil {
-		global.Log.Error("RemoteToLocal.IsNotExistMkDir", zap.Error(err))
+		log.Instance().Error("RemoteToLocal.IsNotExistMkDir", zap.Error(err))
 		return err
 	}
 
 	srcFile, err := this.sourceClient.Open(fname)
 	if err != nil {
-		global.Log.Error("RemoteToLocal.sourceClient.Open", zap.Error(err))
+		log.Instance().Error("RemoteToLocal.sourceClient.Open", zap.Error(err))
 		return err
 	}
 	defer srcFile.Close()
@@ -223,7 +224,7 @@ func (this *RunTask) RemoteSendLocal(fname string, fsize int64) error { // 本�
 	if _, err = srcFile.WriteTo(lf); err != nil {
 		return err
 	}
-	global.Log.Info(fmt.Sprintf("【%s】传输完毕", srcFile.Name()))
+	log.Instance().Info(fmt.Sprintf("【%s】传输完毕", srcFile.Name()))
 
 	err = dao.NewTaskLogDaoImpl().Insert(model.TaskLog{
 		TaskId:     this.task.Id,
@@ -234,7 +235,7 @@ func (this *RunTask) RemoteSendLocal(fname string, fsize int64) error { // 本�
 		CreateTime: time.Now(),
 	})
 	if err != nil {
-		global.Log.Error("RemoteSendRemote.dao.NewTaskLogDaoImpl.Insert", zap.Error(err))
+		log.Instance().Error("RemoteSendRemote.dao.NewTaskLogDaoImpl.Insert", zap.Error(err))
 		return err
 	}
 	return nil
@@ -256,23 +257,23 @@ func pathJoin(p string) (np string) {
 func (this *RunTask) RunL2R() {
 	_ = filepath.Walk(this.task.SourcePath, func(v string, info fs.FileInfo, err error) error {
 		if err != nil {
-			global.Log.Error("RunL2R.Walk.err", zap.Error(err))
+			log.Instance().Error("RunL2R.Walk.err", zap.Error(err))
 			return nil
 		}
 		if info == nil {
-			global.Log.Error("RunL2R.Walk.info Is Nil")
+			log.Instance().Error("RunL2R.Walk.info Is Nil")
 			return nil
 		}
 		stat, err := os.Stat(v)
 		if err != nil {
-			global.Log.Error("RunL2R.os.Stat", zap.Error(err))
+			log.Instance().Error("RunL2R.os.Stat", zap.Error(err))
 			return nil
 		}
 		if stat.IsDir() && v != this.task.SourcePath {
 			dname := string([]rune(strings.ReplaceAll(v, this.task.SourcePath, ""))[1:])
 			err = this.MkRemotedir(dname)
 			if err != nil {
-				global.Log.Error("RunL2R.rm.Mkdir", zap.Error(err))
+				log.Instance().Error("RunL2R.rm.Mkdir", zap.Error(err))
 				return nil
 			}
 		} else {
@@ -282,7 +283,7 @@ func (this *RunTask) RunL2R() {
 				defer this.fp.Done()
 				err = this.LocalSend(v, size)
 				if err != nil {
-					global.Log.Error("WalkPath.LocalToRemote", zap.Error(err))
+					log.Instance().Error("WalkPath.LocalToRemote", zap.Error(err))
 				}
 			}(v, stat.Size())
 		}
@@ -300,7 +301,7 @@ func (this *RunTask) LocalSend(fname string, fsize int64) error {
 	rf := path.Join(this.task.DstPath, fname) // 文件在服务器的路径及名称
 	has, err := this.dstClient.Stat(rf)
 	if err == nil && (has.Size() == fsize) {
-		global.Log.Debug(fmt.Sprintf("文件%s已存在", rf))
+		log.Instance().Debug(fmt.Sprintf("文件%s已存在", rf))
 		return nil
 	}
 	err = this.dstClient.MkdirAll(this.task.DstPath)
@@ -313,13 +314,13 @@ func (this *RunTask) LocalSend(fname string, fsize int64) error {
 	}
 	srcFile, err := os.Open(path.Join(this.task.SourcePath, fname))
 	if err != nil {
-		global.Log.Error("源文件无法读取", zap.Error(err))
+		log.Instance().Error("源文件无法读取", zap.Error(err))
 		return err
 	}
 	defer srcFile.Close()
 	dstFile, err := this.dstClient.Create(rf) // 如果文件存在，create会清空原文件 openfile会追加
 	if err != nil {
-		global.Log.Error("this.dstClient.Create", zap.Error(err))
+		log.Instance().Error("this.dstClient.Create", zap.Error(err))
 		return err
 	}
 	defer dstFile.Close()
@@ -343,7 +344,7 @@ func (this *RunTask) LocalSend(fname string, fsize int64) error {
 	if err != nil {
 		return err
 	}
-	global.Log.Info(fmt.Sprintf("【%s】传输完毕", fname))
+	log.Instance().Info(fmt.Sprintf("【%s】传输完毕", fname))
 	return nil
 }
 
@@ -352,7 +353,7 @@ func (this *RunTask) MkRemotedir(p string) error {
 	dst := path.Join(this.task.DstPath, p)
 	err := this.dstClient.MkdirAll(dst)
 	if err != nil {
-		global.Log.Error("MkRemotedir", zap.Error(err))
+		log.Instance().Error("MkRemotedir", zap.Error(err))
 		return err
 	}
 	return nil

@@ -4,7 +4,6 @@ import (
 	"github.com/xujiajun/nutsdb"
 	"go.uber.org/zap"
 	"log"
-	"pear-admin-go/app/global"
 )
 
 var nuts *INuts
@@ -36,7 +35,7 @@ func (this *INuts) Open() *INuts {
 	opt.Dir = this.dir
 	db, err := nutsdb.Open(opt)
 	if err != nil {
-		global.Log.Fatal("Nuts.Open", zap.Error(err))
+		log.Instance().Fatal("Nuts.Open", zap.Error(err))
 	}
 	this.nuts = db
 	return this
@@ -80,7 +79,7 @@ func (this *INuts) Set(key, val string, ttl ...uint32) error {
 func (this *INuts) Add(key, val string) *INuts {
 	_ = this.nuts.Update(func(t *nutsdb.Tx) error {
 		if err := t.Put(this.bucket, []byte(key), []byte(val), 0); err != nil {
-			global.Log.Error("NutsDB.Add", zap.Error(err))
+			log.Instance().Error("NutsDB.Add", zap.Error(err))
 		}
 		return nil
 	})
@@ -112,7 +111,7 @@ func (this *INuts) GetDatas(prefix string, offset, limit int) map[string]string 
 			}
 			return nil
 		}); err != nil {
-		global.Log.Error("Nuts.FindByPage", zap.Error(err))
+		log.Instance().Error("Nuts.FindByPage", zap.Error(err))
 		return data
 	}
 	return data
@@ -131,7 +130,7 @@ func (this *INuts) FindByPage(start, end string) map[string]string {
 			}
 			return nil
 		}); err != nil {
-		global.Log.Error("Nuts.FindByPage", zap.Error(err))
+		log.Instance().Error("Nuts.FindByPage", zap.Error(err))
 		return data
 	}
 	return data

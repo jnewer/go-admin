@@ -55,7 +55,7 @@ func (t TaskDaoImpl) Delete(task model.Task) error {
 
 func (t TaskDaoImpl) Findtask(k, v string) (*model.Task, error) {
 	var task model.Task
-	err := db.Instance().Model(model.TaskServer{}).Where(k, v).First(&task).Error
+	err := db.Instance().Model(model.Task{}).Where(k, v).First(&task).Error
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return nil, nil
@@ -67,7 +67,7 @@ func (t TaskDaoImpl) Findtask(k, v string) (*model.Task, error) {
 
 func (t TaskDaoImpl) Findtasks(k, v string) ([]model.Task, error) {
 	var tasks []model.Task
-	err := db.Instance().Model(model.TaskServer{}).Where(k, v).Find(&tasks).Error
+	err := db.Instance().Model(model.Task{}).Where(k, v).Find(&tasks).Error
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return nil, nil
@@ -92,7 +92,7 @@ func (t TaskDaoImpl) FindByPage(pageNum, limit int, filters ...interface{}) ([]m
 		tasks []model.Task
 		count int
 	)
-	query := db.Instance().Model(model.TaskServer{})
+	query := db.Instance().Model(model.Task{})
 	query.Where(strings.Join(queryArr, " AND "), values...).Count(&count)
 	err := query.Where(strings.Join(queryArr, " AND "), values...).Order("id desc").Limit(limit).Offset(offset).Find(&tasks).Error
 	return tasks, count, err

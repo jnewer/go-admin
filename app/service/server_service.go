@@ -4,8 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/cilidm/toolbox/str"
+	"pear-admin-go/app/core/log"
 	"pear-admin-go/app/dao"
-	"pear-admin-go/app/global"
+
 	"pear-admin-go/app/global/request"
 	"pear-admin-go/app/model"
 	"time"
@@ -97,7 +98,7 @@ func ServerDel(id int) error {
 func ServerList() ([]model.TaskServer, int, error) {
 	t, c, err := dao.NewTaskServerDaoImpl().FindByPage(1, 100)
 	if err != nil {
-		global.Log.Error(err.Error())
+		log.Instance().Error(err.Error())
 		return nil, 0, err
 	}
 	return t, c, nil

@@ -7,10 +7,9 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"log"
 	"os"
 	"pear-admin-go/app/core/config"
-	"pear-admin-go/app/global"
+	"pear-admin-go/app/core/log"
 	"pear-admin-go/app/global/initial"
 	"pear-admin-go/app/model"
 )
@@ -31,7 +30,7 @@ func InitConn() {
 	case "sqlite":
 		conn = GormSqlite()
 	default:
-		log.Fatal("No DBType")
+		log.Instance().Fatal("No DBType")
 	}
 }
 
@@ -64,12 +63,12 @@ func GormSqlite() *gorm.DB {
 	dbFile := fmt.Sprintf("%s.db", config.Conf.DB.DBName)
 	if file.CheckNotExist(dbFile) {
 		if err := createDB(dbFile); err != nil {
-			log.Fatal("创建数据库文件失败：" + err.Error())
+			log.Instance().Fatal("创建数据库文件失败：" + err.Error())
 		}
 	}
 	db, err = gorm.Open("sqlite3", dbFile)
 	if err != nil {
-		log.Fatal("连接数据库失败：" + err.Error())
+		log.Instance().Fatal("连接数据库失败：" + err.Error())
 	}
 	db.SingularTable(true)
 	db.LogMode(true)
@@ -106,11 +105,11 @@ func checkTableData(tb interface{}) {
 	if db.HasTable(tb) == false {
 		if config.Conf.DB.DBType == "sqlite" {
 			if err := db.Debug().CreateTable(tb).Error; err != nil {
-				log.Fatal("创建数据表失败", err.Error())
+				log.Instance().Fatal("创建数据表失败: " + err.Error())
 			}
 		} else {
 			if err := db.Debug().Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4").CreateTable(tb).Error; err != nil {
-				log.Fatal("创建数据表失败", err.Error())
+				log.Instance().Fatal("创建数据表失败: " + err.Error())
 			}
 		}
 		var sqlName string
@@ -132,11 +131,11 @@ func checkTableData(tb interface{}) {
 		// 已存在的表校验一下是否有新增字段
 		if config.Conf.DB.DBType == "sqlite" {
 			if err := db.Debug().AutoMigrate(tb).Error; err != nil {
-				log.Fatal("数据库初始化失败", err.Error())
+				log.Instance().Fatal("数据库初始化失败: " + err.Error())
 			}
 		} else {
 			if err := db.Debug().Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8").AutoMigrate(tb).Error; err != nil {
-				log.Fatal("数据库初始化失败", err.Error())
+				log.Instance().Fatal("数据库初始化失败: " + err.Error())
 			}
 		}
 	}
@@ -145,12 +144,12 @@ func checkTableData(tb interface{}) {
 func initData(sqlName string) {
 	dot, err := dotsql.LoadFromString(initial.SqlData)
 	if err != nil {
-		global.Log.Fatal("无法加载初始数据")
+		log.Instance().Fatal("无法加载初始数据")
 		return
 	}
 	_, err = dot.Exec(db.DB(), sqlName)
 	if err != nil {
-		global.Log.Fatal("执行 " + sqlName + " 失败，" + err.Error())
+		log.Instance().Fatal("执行 " + sqlName + " 失败，" + err.Error())
 		return
 	}
 }

@@ -5,7 +5,7 @@ import (
 	"github.com/cilidm/toolbox/gconv"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"pear-admin-go/app/global"
+	"pear-admin-go/app/core/log"
 	"pear-admin-go/app/model"
 	"pear-admin-go/app/service"
 )
@@ -120,7 +120,7 @@ func (resp *ApiResp) Log(title string, inParam interface{}) *ApiResp {
 	}
 	err := service.CreateOperLog(resp.c, model.OperForm{Title: title, InContent: inContentStr, ErrorMsg: errMsg, OutContent: resp.r})
 	if err != nil {
-		global.Log.Error(err.Error())
+		log.Instance().Error(err.Error())
 	}
 	return resp
 }

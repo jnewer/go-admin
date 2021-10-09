@@ -11,7 +11,16 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-func InitLog() (zapLog *zap.Logger) {
+var logger *zap.Logger
+
+func Instance() *zap.Logger {
+	if logger == nil {
+		InitLog()
+	}
+	return logger
+}
+
+func InitLog() {
 	hook := lumberjack.Logger{
 		Filename:   path.Join(config.Conf.Zaplog.Director, time.Now().Format("2006-01-02")+".log"), // 日志文件路径
 		MaxSize:    10,                                                                             // 每个日志文件保存的最大尺寸 单位：M
@@ -53,10 +62,8 @@ func InitLog() (zapLog *zap.Logger) {
 	// 设置初始化字段
 	filed := zap.Fields(zap.String("serverName", "pear-admin-go"))
 	// 构造日志
-	logger := zap.New(core, caller, development, filed)
-
+	logger = zap.New(core, caller, development, filed)
 	logger.Info("log 初始化成功")
-	return logger
 }
 
 // 自定义日志输出时间格式

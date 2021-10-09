@@ -7,8 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"pear-admin-go/app/core/cache"
 	"pear-admin-go/app/core/db"
+	"pear-admin-go/app/core/log"
 	dao2 "pear-admin-go/app/dao"
-	"pear-admin-go/app/global"
+
 	e2 "pear-admin-go/app/global/e"
 	"pear-admin-go/app/global/request"
 	"pear-admin-go/app/model"
@@ -134,7 +135,7 @@ func SaveRoleAuth(roleId, authIds string) (err error) {
 		roleAuth.RoleID = gconv.Uint64(roleId)
 		err = dao2.NewRoleAuthDaoImpl().Insert(roleAuth, tx)
 		if err != nil {
-			global.Log.Warn("InsertRoleAuth.Insert error:" + err.Error())
+			log.Instance().Warn("InsertRoleAuth.Insert error:" + err.Error())
 			tx.Rollback()
 			return err
 		}

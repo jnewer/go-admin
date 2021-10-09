@@ -31,7 +31,7 @@ func TestNutsDB(t *testing.T) {
 		Instance().Add(fmt.Sprintf("bucket:0000000000%d", i), strconv.Itoa(i))
 	}
 	datas := Instance().GetDatas("bucket", 0, 5)
-	for k,v := range datas{
-		fmt.Println(k,v)
+	for k, v := range datas {
+		fmt.Println(k, v)
 	}
 }
