@@ -3,14 +3,14 @@ package nuts
 import (
 	"github.com/xujiajun/nutsdb"
 	"go.uber.org/zap"
-	"log"
+	"pear-admin-go/app/core/log"
 )
 
 var nuts *INuts
 
 func Instance() *INuts {
 	if nuts == nil {
-		log.Println("No nuts DB Clint")
+		log.Instance().Error("No nuts DB Clint")
 		return nil
 	}
 	return nuts
