@@ -80,14 +80,14 @@ func (this *RunTask) Run() {
 }
 
 func (this *RunTask) RunR2R() {
-
+	this.WalkRemotePath(this.task.SourcePath, e.ToRemote)
 }
 
 func (this *RunTask) RunR2L() {
-	this.WalkRemotePath(this.task.SourcePath)
+	this.WalkRemotePath(this.task.SourcePath, e.ToLocal)
 }
 
-func (this *RunTask) WalkRemotePath(dirPath string) {
+func (this *RunTask) WalkRemotePath(dirPath string, runType int) {
 	globPath := pathJoin(dirPath)
 	files, err := this.sourceClient.Glob(globPath)
 	if err != nil {
@@ -101,13 +101,17 @@ func (this *RunTask) WalkRemotePath(dirPath string) {
 			continue
 		}
 		if stat.IsDir() {
-			this.WalkRemotePath(v)
+			this.WalkRemotePath(v, runType)
 		} else {
 			this.fp.Add(1)
 			atomic.AddUint64(&this.counter, 1)
 			go func(v string, size int64) {
 				defer this.fp.Done()
-				err = this.RemoteSend(v, size)
+				if runType == e.ToLocal {
+					err = this.RemoteSendLocal(v, size)
+				} else if runType == e.ToRemote {
+					err = this.RemoteSendRemote(v, size)
+				}
 				if err != nil {
 					global.Log.Error("WalkRemotePath.RemoteToLocal", zap.Error(err))
 				}
@@ -116,8 +120,50 @@ func (this *RunTask) WalkRemotePath(dirPath string) {
 	}
 }
 
+func (this *RunTask) RemoteSendRemote(fname string, fsize int64) error {
+	rf := path.Join(this.task.DstPath, fname) // 文件在服务器的路径及名称
+	has, err := this.dstClient.Stat(rf)
+	if err == nil && (has.Size() == fsize) {
+		global.Log.Debug(fmt.Sprintf("文件%s已存在", rf))
+		return nil
+	}
+	err = this.dstClient.MkdirAll(this.task.DstPath)
+	if err != nil {
+		return err
+	}
+	err = this.dstClient.Chmod(this.task.DstPath, os.ModePerm)
+	if err != nil {
+		return err
+	}
+
+	srcFile, err := this.sourceClient.Open(fname)
+	if err != nil {
+		global.Log.Error("RemoteToLocal.sourceClient.Open", zap.Error(err))
+		return err
+	}
+	defer srcFile.Close()
+
+	dstFile, err := this.dstClient.Create(rf) // 如果文件存在，create会清空原文件 openfile会追加
+	if err != nil {
+		global.Log.Error("this.dstClient.Create", zap.Error(err))
+		return err
+	}
+	defer dstFile.Close()
+
+	buf := make([]byte, 10000)
+	for {
+		n, _ := srcFile.Read(buf)
+		if n == 0 {
+			break
+		}
+		dstFile.Write(buf[:n]) // 读多少 写多少
+	}
+	global.Log.Info(fmt.Sprintf("【%s】传输完毕", fname))
+	return nil
+}
+
 // 远端->本地 使用 sourceClient
-func (this *RunTask) RemoteSend(fname string, fsize int64) error { // 本地文件夹
+func (this *RunTask) RemoteSendLocal(fname string, fsize int64) error { // 本地文件夹
 	dstFile := path.Join(this.task.DstPath, strings.ReplaceAll(fname, this.task.SourcePath, "")) // 需要保存的本地文件地址
 	has, err := check.CheckFile(dstFile)                                                         // 是否已存在
 	if err != nil {

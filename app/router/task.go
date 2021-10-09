@@ -5,7 +5,7 @@ import (
 	"pear-admin-go/app/controller"
 )
 
-func BackupRouter(r *gin.Engine) {
+func TaskRouter(r *gin.Engine) {
 	tr := r.Group("system")
 	tr.GET("server/list", controller.ServerList)
 	tr.GET("server/json", controller.ServerJson)

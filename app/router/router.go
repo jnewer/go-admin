@@ -32,6 +32,6 @@ func InitRouter(staticFs, templateFs embed.FS) *gin.Engine {
 
 	CommonRouter(r)
 	SystemRouter(r)
-	BackupRouter(r)
+	TaskRouter(r)
 	return r
 }
