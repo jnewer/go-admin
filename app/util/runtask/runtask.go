@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/cilidm/toolbox/OS"
 	"github.com/cilidm/toolbox/file"
-	"github.com/cilidm/toolbox/logging"
 	"github.com/pkg/sftp"
 	"go.uber.org/zap"
 	"io/fs"
@@ -27,8 +26,12 @@ type RunTask struct {
 	task         model.Task
 	sourceClient *sftp.Client // 源服务器连接
 	dstClient    *sftp.Client // 目标服务器连接
-	fp           *pool.Pool
-	counter      uint64
+	fp           *pool.Pool   // chan pool
+	counter      uint64       // 文件传输计数器
+}
+
+func NewRunTask(task model.Task) *RunTask {
+	return &RunTask{task: task, fp: pool.NewPool(e.MaxPool), counter: 0}
 }
 
 func (this *RunTask) SetSourceClient() *RunTask {
@@ -77,6 +80,10 @@ func (this *RunTask) Run() {
 	} else if this.task.SourceType == e.Local && this.task.DstType == e.Remote {
 		this.RunL2R()
 	}
+	err := dao.NewTaskDaoImpl().Update(this.task, map[string]interface{}{"task_file_num": this.counter})
+	if err != nil {
+		global.Log.Error("Run.Update", zap.Error(err))
+	}
 }
 
 func (this *RunTask) RunR2R() {
@@ -91,7 +98,7 @@ func (this *RunTask) WalkRemotePath(dirPath string, runType int) {
 	globPath := pathJoin(dirPath)
 	files, err := this.sourceClient.Glob(globPath)
 	if err != nil {
-		logging.Error(err)
+		global.Log.Error("WalkRemotePath.this.sourceClient.Glob", zap.Error(err))
 		return
 	}
 	for _, v := range files {
@@ -101,6 +108,14 @@ func (this *RunTask) WalkRemotePath(dirPath string, runType int) {
 			continue
 		}
 		if stat.IsDir() {
+			if runType == e.ToRemote {
+				dname := string([]rune(strings.ReplaceAll(v, this.task.SourcePath, ""))[1:])
+				err = this.MkRemotedir(dname)
+				if err != nil {
+					global.Log.Error("WalkRemotePath.MkRemotedir", zap.Error(err))
+					return
+				}
+			}
 			this.WalkRemotePath(v, runType)
 		} else {
 			this.fp.Add(1)
@@ -121,7 +136,8 @@ func (this *RunTask) WalkRemotePath(dirPath string, runType int) {
 }
 
 func (this *RunTask) RemoteSendRemote(fname string, fsize int64) error {
-	rf := path.Join(this.task.DstPath, fname) // 文件在服务器的路径及名称
+	newName := strings.ReplaceAll(fname, this.task.SourcePath, "")
+	rf := path.Join(this.task.DstPath, newName) // 文件在目标服务器的路径及名称
 	has, err := this.dstClient.Stat(rf)
 	if err == nil && (has.Size() == fsize) {
 		global.Log.Debug(fmt.Sprintf("文件%s已存在", rf))
@@ -135,7 +151,6 @@ func (this *RunTask) RemoteSendRemote(fname string, fsize int64) error {
 	if err != nil {
 		return err
 	}
-
 	srcFile, err := this.sourceClient.Open(fname)
 	if err != nil {
 		global.Log.Error("RemoteToLocal.sourceClient.Open", zap.Error(err))
@@ -145,7 +160,7 @@ func (this *RunTask) RemoteSendRemote(fname string, fsize int64) error {
 
 	dstFile, err := this.dstClient.Create(rf) // 如果文件存在，create会清空原文件 openfile会追加
 	if err != nil {
-		global.Log.Error("this.dstClient.Create", zap.Error(err))
+		global.Log.Error("RemoteSendRemote.this.dstClient.Create", zap.Error(err))
 		return err
 	}
 	defer dstFile.Close()
@@ -159,6 +174,18 @@ func (this *RunTask) RemoteSendRemote(fname string, fsize int64) error {
 		dstFile.Write(buf[:n]) // 读多少 写多少
 	}
 	global.Log.Info(fmt.Sprintf("【%s】传输完毕", fname))
+	err = dao.NewTaskLogDaoImpl().Insert(model.TaskLog{
+		TaskId:     this.task.Id,
+		ServerId:   this.task.DstServer,
+		SourcePath: fname,
+		DstPath:    rf,
+		Size:       fsize,
+		CreateTime: time.Now(),
+	})
+	if err != nil {
+		global.Log.Error("RemoteSendRemote.dao.NewTaskLogDaoImpl.Insert", zap.Error(err))
+		return err
+	}
 	return nil
 }
 
@@ -196,7 +223,20 @@ func (this *RunTask) RemoteSendLocal(fname string, fsize int64) error { // 本�
 	if _, err = srcFile.WriteTo(lf); err != nil {
 		return err
 	}
-	global.Log.Info(fmt.Sprintf("copy %s finished!", srcFile.Name()))
+	global.Log.Info(fmt.Sprintf("【%s】传输完毕", srcFile.Name()))
+
+	err = dao.NewTaskLogDaoImpl().Insert(model.TaskLog{
+		TaskId:     this.task.Id,
+		ServerId:   this.task.DstServer,
+		SourcePath: fname,
+		DstPath:    dstFile,
+		Size:       fsize,
+		CreateTime: time.Now(),
+	})
+	if err != nil {
+		global.Log.Error("RemoteSendRemote.dao.NewTaskLogDaoImpl.Insert", zap.Error(err))
+		return err
+	}
 	return nil
 }
 
@@ -312,11 +352,8 @@ func (this *RunTask) MkRemotedir(p string) error {
 	dst := path.Join(this.task.DstPath, p)
 	err := this.dstClient.MkdirAll(dst)
 	if err != nil {
+		global.Log.Error("MkRemotedir", zap.Error(err))
 		return err
 	}
 	return nil
-}
-
-func NewRunTask(task model.Task) *RunTask {
-	return &RunTask{task: task, fp: pool.NewPool(e.MaxPool), counter: 0}
 }

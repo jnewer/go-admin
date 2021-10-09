@@ -14,9 +14,9 @@ import (
 var client *sftp.Client
 
 func Instance(server model.TaskServer) (*sftp.Client, error) {
-	if client != nil {
-		return client, nil
-	}
+	//if client != nil {
+	//	return client, nil
+	//}
 	var err error
 	if server.ConnType == 1 {
 		client, err = connectByPwd(server)
