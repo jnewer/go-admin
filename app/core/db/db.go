@@ -143,6 +143,7 @@ func checkTableData(tb interface{}) {
 
 func initData(sqlName string) {
 	dot, err := dotsql.LoadFromString(initial.SqlInfo)
+	//dot, err := dotsql.LoadFromFile("database/db.sql")
 	if err != nil {
 		log.Instance().Fatal("无法加载初始数据")
 		return
