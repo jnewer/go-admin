@@ -57,3 +57,12 @@ go run main.go
 - [x] 优化文件层级
 - [x] 本地、服务器文件备份迁移功能
 - [ ] 完善操作日志 
+
+![登陆日志](doc/image/login-log.png)
+![操作日志](doc/image/oper-log.png)
+![添加服务器-密码登陆](doc/image/server1.png)
+![添加服务器-密钥登陆](doc/image/server2.png)
+![添加任务](doc/image/task1.png)
+![添加任务](doc/image/task2.png)
+![添加任务](doc/image/task3.png)
+![执行任务](doc/image/task4.png)
