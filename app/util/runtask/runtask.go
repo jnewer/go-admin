@@ -74,6 +74,7 @@ func (this *RunTask) getClient(sid int) (*sftp.Client, error) {
 }
 
 func (this *RunTask) Run() {
+	log.Instance().Info("Run:", zap.Int("counter", int(this.counter)))
 	if this.task.SourceType == e.Remote && this.task.DstType == e.Remote {
 		this.RunR2R()
 	} else if this.task.SourceType == e.Remote && this.task.DstType == e.Local {
@@ -81,6 +82,7 @@ func (this *RunTask) Run() {
 	} else if this.task.SourceType == e.Local && this.task.DstType == e.Remote {
 		this.RunL2R()
 	}
+	log.Instance().Info("Update:", zap.Int("counter", int(this.counter)))
 	err := dao.NewTaskDaoImpl().Update(this.task, map[string]interface{}{"task_file_num": this.counter})
 	if err != nil {
 		log.Instance().Error("Run.Update", zap.Error(err))
@@ -121,6 +123,7 @@ func (this *RunTask) WalkRemotePath(dirPath string, runType int) {
 		} else {
 			this.fp.Add(1)
 			atomic.AddUint64(&this.counter, 1)
+			log.Instance().Info("counter:", zap.Int("counter", int(this.counter)))
 			go func(v string, size int64) {
 				defer this.fp.Done()
 				if runType == e.ToLocal {
@@ -269,7 +272,10 @@ func (this *RunTask) RunL2R() {
 			log.Instance().Error("RunL2R.os.Stat", zap.Error(err))
 			return nil
 		}
-		if stat.IsDir() && v != this.task.SourcePath {
+		if stat.IsDir() {
+			if v == this.task.SourcePath {
+				return nil
+			}
 			dname := string([]rune(strings.ReplaceAll(v, this.task.SourcePath, ""))[1:])
 			err = this.MkRemotedir(dname)
 			if err != nil {
@@ -277,8 +283,9 @@ func (this *RunTask) RunL2R() {
 				return nil
 			}
 		} else {
-			atomic.AddUint64(&this.counter, 1)
 			this.fp.Add(1)
+			atomic.AddUint64(&this.counter, 1)
+			log.Instance().Info("counter:"+v, zap.Int("counter", int(this.counter)))
 			go func(v string, size int64) {
 				defer this.fp.Done()
 				err = this.LocalSend(v, size)
