@@ -11,42 +11,6 @@
 <body class="pear-container">
 <div class="layui-card">
     <div class="layui-card-body">
-        <form class="layui-form" action="">
-            <div class="layui-form-item">
-                <div class="layui-form-item layui-inline">
-                    <label class="layui-form-label">服务器名称</label>
-                    <div class="layui-input-inline">
-                        <input type="text" name="server_name" placeholder="" class="layui-input">
-                    </div>
-                </div>
-                <div class="layui-form-item layui-inline">
-                    <label class="layui-form-label">IP</label>
-                    <div class="layui-input-inline">
-                        <input type="text" name="server_ip" placeholder="" class="layui-input">
-                    </div>
-                </div>
-                <div class="layui-form-item layui-inline">
-                    <label class="layui-form-label">备注</label>
-                    <div class="layui-input-inline">
-                        <input type="text" name="detail" placeholder="" class="layui-input">
-                    </div>
-                </div>
-                <div class="layui-form-item layui-inline">
-                    <button class="pear-btn pear-btn-md pear-btn-primary" lay-submit lay-filter="user-query">
-                        <i class="layui-icon layui-icon-search"></i>
-                        查询
-                    </button>
-                    <button type="reset" class="pear-btn pear-btn-md">
-                        <i class="layui-icon layui-icon-refresh"></i>
-                        重置
-                    </button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-<div class="layui-card">
-    <div class="layui-card-body">
         <table id="role-table" lay-filter="role-table"></table>
     </div>
 </div>
@@ -87,17 +51,20 @@
                     {field: 'id', title: 'ID',width:75, align: 'center', sort: true},
                     {field: '', title: '任务类型', align: 'center', sort: true,templet: function(res){
                             if(res.source_type == 1 && res.dst_type == 2){
-                                return '本地->云端'
+                                return '<span class="pear-btn pear-btn-warming pear-btn-xs">本地</span> <i class="layui-icon layui-icon-triangle-r"></i> <span class="pear-btn pear-btn-danger pear-btn-xs">云端</span>'
                             }else if(res.source_type == 2 && res.dst_type == 1){
-                                return '云端->本地'
+                                return '<span class="pear-btn pear-btn-danger pear-btn-xs">云端</span> <i class="layui-icon layui-icon-triangle-r"></i> <span class="pear-btn pear-btn-warming pear-btn-xs">本地</span>'
                             }else if(res.source_type == 2 && res.dst_type == 2){
-                                return '云端->云端'
+                                return '<span class="pear-btn pear-btn-danger pear-btn-xs">云端</span> <i class="layui-icon layui-icon-triangle-r"></i> <span class="pear-btn pear-btn-danger pear-btn-xs">云端</span>'
                             }
                         }},
                     {field: 'source_path', title: '源地址', align: 'center', sort: true},
                     {field: 'dst_path', title: '目标地址', align: 'center', sort: true},
-                    {field: 'task_file_num', title: '文件数量', align: 'center', sort: true},
-                    {title: '操作', toolbar: '#server-bar', align: 'center', width: 140}
+                    {field: 'task_file_num', title: '文件数量', align: 'center', sort: true,templet: function(res){
+                           return res.task_log_num + " / " + res.task_file_num
+                        }},
+                    {field: 'create_time', title: '创建时间', align: 'center', sort: true}
+                    // {title: '操作', toolbar: '#server-bar', align: 'center', width: 140}
                 ]
             ],
             skin: 'line',

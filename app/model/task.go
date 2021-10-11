@@ -18,3 +18,9 @@ type TaskCommon struct {
 	ExcludeType  string `json:"exclude_type" zh:"排除类型" form:"exclude_type"`
 	TaskFileNum  int    `json:"task_file_num"`
 }
+
+type TaskResp struct {
+	TaskCommon
+	TaskLogNum int    `json:"task_log_num"`
+	CreateTime string `json:"create_time"`
+}

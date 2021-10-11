@@ -42,7 +42,7 @@ func TaskAdd(c *gin.Context) {
 			response.ErrorResp(c).SetMsg(err.Error()).WriteJsonExit()
 			return
 		}
-		response.SuccessResp(c).WriteJsonExit()
+		response.SuccessResp(c).SetMsg("任务创建成功，已在后台运行，请稍后查看文件数量!").WriteJsonExit()
 		return
 	}
 }

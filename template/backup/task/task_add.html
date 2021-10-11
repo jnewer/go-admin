@@ -58,12 +58,12 @@
                         <input type="text" name="dst_path" lay-verify="required" autocomplete="off"  class="layui-input">
                     </div>
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">排除类型</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="exclude_type" lay-verify="" placeholder="多个请用,分隔开,如.jpg,.png" autocomplete="off"  class="layui-input">
-                    </div>
-                </div>
+<!--                <div class="layui-form-item">-->
+<!--                    <label class="layui-form-label">排除类型</label>-->
+<!--                    <div class="layui-input-block">-->
+<!--                        <input type="text" name="exclude_type" lay-verify="" placeholder="多个请用,分隔开,如.jpg,.png" autocomplete="off"  class="layui-input">-->
+<!--                    </div>-->
+<!--                </div>-->
             </div>
         </div>
     </div>
@@ -83,9 +83,10 @@
 <script src="/static/component/layui/layui.js"></script>
 <script src="/static/component/pear/pear.js"></script>
 <script>
-    layui.use(['form','jquery'],function(){
+    layui.use(['form','notice','jquery'],function(){
         let form = layui.form;
         let $ = layui.jquery;
+        let notice = layui.notice;
 
         form.on('radio(source_type)', function(data){
             if(data.value==1){
@@ -112,12 +113,12 @@
                 success:function(result){
                     layer.closeAll('loading');
                     if(result.code == 200){
-                        layer.msg(result.msg,{icon:1,time:1000},function(){
+                        layer.msg(result.msg,{icon:1,time:1400},function(){
                             parent.layer.close(parent.layer.getFrameIndex(window.name));//关闭当前页
                             parent.layui.table.reload("role-table");
                         });
                     }else{
-                        layer.msg(result.msg,{icon:2,time:1000});
+                        notice.warning(result.msg);
                     }
                 }
             })
