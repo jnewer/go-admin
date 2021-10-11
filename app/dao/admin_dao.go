@@ -1,10 +1,10 @@
 package dao
 
 import (
+	"pear-admin-go/app/core/db"
 	"strings"
 
 	"github.com/cilidm/toolbox/gconv"
-	"pear-admin-go/app/global"
 	"pear-admin-go/app/model"
 )
 
@@ -26,17 +26,17 @@ type AdminDaoImpl struct {
 }
 
 func (a *AdminDaoImpl) Insert(admin model.Admin) (adminID uint, err error) {
-	err = global.DBConn.Create(&admin).Error
+	err = db.Instance().Create(&admin).Error
 	return admin.ID, err
 }
 
 func (a *AdminDaoImpl) FindAdmin(k, v string) (admin model.Admin, err error) {
-	global.DBConn.Model(model.Admin{}).Where(k, v).First(&admin)
+	db.Instance().Model(model.Admin{}).Where(k, v).First(&admin)
 	return admin, nil
 }
 
 func (a *AdminDaoImpl) FindByName(name string) (admin model.Admin, err error) {
-	global.DBConn.Model(model.Admin{}).Where("login_name = ?", name).First(&admin)
+	db.Instance().Model(model.Admin{}).Where("login_name = ?", name).First(&admin)
 	return admin, nil
 }
 
@@ -52,18 +52,18 @@ func (a *AdminDaoImpl) FindByPage(pageNum, limit int, filters ...interface{}) (a
 			values = append(values, filters[k+1])
 		}
 	}
-	query := global.DBConn.Model(model.Admin{})
+	query := db.Instance().Model(model.Admin{})
 	query.Where(strings.Join(queryArr, " OR "), values...).Count(&count)
 	err = query.Where(strings.Join(queryArr, " OR "), values...).Order("id desc").Limit(limit).Offset(offset).Find(&admins).Error
 	return
 }
 
 func (a *AdminDaoImpl) Update(admin model.Admin, updateAttrMap map[string]interface{}) error {
-	err := global.DBConn.Model(&admin).Where("id = ?", admin.ID).Updates(updateAttrMap).Error
+	err := db.Instance().Model(&admin).Where("id = ?", admin.ID).Updates(updateAttrMap).Error
 	return err
 }
 
 func (a *AdminDaoImpl) Delete(id int) error {
-	err := global.DBConn.Where("id = ?", id).Delete(model.Admin{}).Error
+	err := db.Instance().Where("id = ?", id).Delete(model.Admin{}).Error
 	return err
 }

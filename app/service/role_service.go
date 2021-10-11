@@ -6,11 +6,13 @@ import (
 	pkg "github.com/cilidm/toolbox/str"
 	"github.com/gin-gonic/gin"
 	"pear-admin-go/app/core/cache"
+	"pear-admin-go/app/core/db"
+	"pear-admin-go/app/core/log"
 	dao2 "pear-admin-go/app/dao"
-	"pear-admin-go/app/global"
+
+	e2 "pear-admin-go/app/global/e"
 	"pear-admin-go/app/global/request"
 	"pear-admin-go/app/model"
-	"pear-admin-go/app/util/e"
 	"strings"
 )
 
@@ -45,8 +47,8 @@ func RoleListJsonService(f request.RoleForm) (count int, data []map[string]inter
 			ID:        gconv.Int(v.ID),
 			RoleName:  v.RoleName,
 			Detail:    v.Detail,
-			CreatedAt: v.CreatedAt.Format(e.TimeFormat),
-			UpdatedAt: v.UpdatedAt.Format(e.TimeFormat),
+			CreatedAt: v.CreatedAt.Format(e2.TimeFormat),
+			UpdatedAt: v.UpdatedAt.Format(e2.TimeFormat),
 		}, "json"))
 	}
 	return count, data, nil
@@ -127,13 +129,13 @@ func SaveRoleAuth(roleId, authIds string) (err error) {
 		return err
 	}
 	var roleAuth model.RoleAuth
-	tx := global.DBConn.Begin()
+	tx := db.Instance().Begin()
 	for _, v := range authIdMap {
 		roleAuth.AuthID = gconv.Uint(v)
 		roleAuth.RoleID = gconv.Uint64(roleId)
 		err = dao2.NewRoleAuthDaoImpl().Insert(roleAuth, tx)
 		if err != nil {
-			global.Log.Warn("InsertRoleAuth.Insert error:" + err.Error())
+			log.Instance().Warn("InsertRoleAuth.Insert error:" + err.Error())
 			tx.Rollback()
 			return err
 		}
@@ -146,7 +148,7 @@ func SaveRoleAuth(roleId, authIds string) (err error) {
 func deleteMenuCache() {
 	items := cache.Instance().Items()
 	for k, _ := range items {
-		if strings.HasPrefix(k, e.MenuCache) {
+		if strings.HasPrefix(k, e2.MenuCache) {
 			cache.Instance().Delete(k)
 		}
 	}

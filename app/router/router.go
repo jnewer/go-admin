@@ -29,8 +29,8 @@ func InitRouter(staticFs, templateFs embed.FS) *gin.Engine {
 	r.Use(gin.Recovery())
 	r.Use(middleware.Cors())
 	r.Use(session.EnableCookieSession(config.Instance().App.JwtSecret))
-	
 	CommonRouter(r)
 	SystemRouter(r)
+	TaskRouter(r)
 	return r
 }

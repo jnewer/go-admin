@@ -2,7 +2,7 @@ package dao
 
 import (
 	"github.com/cilidm/toolbox/gconv"
-	"pear-admin-go/app/global"
+	"pear-admin-go/app/core/db"
 	"pear-admin-go/app/model"
 
 	"strings"
@@ -39,40 +39,40 @@ func (r *RoleDaoImpl) FindByPage(pageNum, limit int, filters ...interface{}) (ro
 		}
 	}
 
-	//query := global.DBConn.Model(model.Role{}).Where("status = 1")
-	query := global.DBConn.Model(model.Role{})
+	//query := db.Instance().Model(model.Role{}).Where("status = 1")
+	query := db.Instance().Model(model.Role{})
 	query.Where(strings.Join(queryArr, " AND "), values...).Count(&count)
 	err = query.Where(strings.Join(queryArr, " AND "), values...).Order("id desc").Limit(limit).Offset(offset).Find(&roles).Error
 	return
 }
 
 func (r *RoleDaoImpl) Insert(role model.Role) (uint, error) {
-	err := global.DBConn.Create(&role).Error
+	err := db.Instance().Create(&role).Error
 	return role.ID, err
 }
 
 func (r *RoleDaoImpl) FindOne(roleID string) (role model.Role, err error) {
-	err = global.DBConn.Preload("RoleAuths").First(&role, roleID).Error // 预加载关联查询
+	err = db.Instance().Preload("RoleAuths").First(&role, roleID).Error // 预加载关联查询
 	//client.First(&role,roleID)
 	return role, err
 }
 
 func (r *RoleDaoImpl) Update(role model.Role, attr map[string]interface{}) error {
-	err := global.DBConn.Model(&role).Omit("id").Updates(attr).Error
+	err := db.Instance().Model(&role).Omit("id").Updates(attr).Error
 	return err
 }
 
 func (r *RoleDaoImpl) Delete(role model.Role) error {
-	err := global.DBConn.Delete(&role).Error
+	err := db.Instance().Delete(&role).Error
 	return err
 }
 
 func (r *RoleDaoImpl) FindRole(k, v string) (role model.Role, err error) {
-	err = global.DBConn.Model(model.Role{}).Where(k, v).First(&role).Error
+	err = db.Instance().Model(model.Role{}).Where(k, v).First(&role).Error
 	return
 }
 
 func (r *RoleDaoImpl) FindRoles(k, v string) (roles []model.Role, err error) {
-	err = global.DBConn.Model(model.Role{}).Where(k, v).Find(&roles).Error
+	err = db.Instance().Model(model.Role{}).Where(k, v).Find(&roles).Error
 	return
 }

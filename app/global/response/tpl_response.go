@@ -4,7 +4,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"pear-admin-go/app/util/e"
+	e2 "pear-admin-go/app/global/e"
 )
 
 // 通用tpl响应
@@ -43,7 +43,7 @@ func ForbiddenTpl(c *gin.Context) *TplResp {
 //输出页面模板
 func (resp *TplResp) WriteTpl(params ...gin.H) {
 	session := sessions.Default(resp.c)
-	uid := session.Get(e.Auth)
+	uid := session.Get(e2.Auth)
 	if params == nil || len(params) == 0 {
 		resp.c.HTML(http.StatusOK, resp.tpl, gin.H{"uid": uid})
 	} else {

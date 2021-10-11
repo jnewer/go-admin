@@ -5,15 +5,13 @@ import (
 	"embed"
 	"fmt"
 	"github.com/cilidm/toolbox/gconv"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"pear-admin-go/app/core/config"
 	"pear-admin-go/app/core/db"
-	log2 "pear-admin-go/app/core/log"
+	"pear-admin-go/app/core/log"
 	"pear-admin-go/app/core/redis"
-	"pear-admin-go/app/global"
 	"pear-admin-go/app/router"
 	"pear-admin-go/app/util/validate"
 	"syscall"
@@ -31,9 +29,9 @@ func main() {
 		fmt.Println("init trans failed, err:", err)
 	}
 
-	global.Log = log2.InitLog()
-
-	global.DBConn = db.InitConn()
+	config.InitConfig("./config.toml")
+	log.InitLog()
+	db.InitConn()
 
 	redis.InitRedis()
 	r := router.InitRouter(staticFs, templateFs)
@@ -49,7 +47,7 @@ func main() {
 `, gconv.String(config.Instance().App.HttpPort))
 	go func() {
 		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			global.Log.Error(err.Error())
+			log.Instance().Error(err.Error())
 			os.Exit(0)
 		}
 	}()
@@ -66,13 +64,13 @@ func shutDown(s *http.Server) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	err := global.DBConn.Close()
+	err := db.Instance().Close()
 	if err != nil {
-		log.Fatal("Close DB error:", err.Error())
+		log.Instance().Fatal("Close DB error:" + err.Error())
 	}
 
 	if err := s.Shutdown(ctx); err != nil {
-		log.Fatal("Server Shutdown:", err)
+		log.Instance().Fatal("Server Shutdown:" + err.Error())
 	}
 	fmt.Println("Server exiting")
 }

@@ -3,7 +3,7 @@ package captcha
 import (
 	"fmt"
 	"github.com/mojocn/base64Captcha"
-	"pear-admin-go/app/util/e"
+	e2 "pear-admin-go/app/global/e"
 )
 
 // 设置自带的store
@@ -16,11 +16,11 @@ func CaptMake() (id, b64s string, err error) {
 
 	// 配置验证码信息
 	captchaConfig := base64Captcha.DriverString{
-		Height:          e.ImgHeight,
-		Width:           e.ImgWidth,
+		Height:          e2.ImgHeight,
+		Width:           e2.ImgWidth,
 		NoiseCount:      0,     // 干扰字母
 		ShowLineOptions: 1 | 3, // 干扰线
-		Length:          e.ImgKeyLength,
+		Length:          e2.ImgKeyLength,
 		Source:          "qwertyuioplkjhgfdsazxcvbnm",
 	}
 

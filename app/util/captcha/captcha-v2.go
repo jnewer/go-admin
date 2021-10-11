@@ -6,14 +6,14 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	e2 "pear-admin-go/app/global/e"
 	"pear-admin-go/app/global/response"
-	"pear-admin-go/app/util/e"
 	"time"
 )
 
 func Captcha(c *gin.Context) {
 	l := captcha.DefaultLen
-	w, h := e.ImgWidth, e.ImgHeight
+	w, h := e2.ImgWidth, e2.ImgHeight
 	captchaId := captcha.NewLen(l)
 	session := sessions.Default(c)
 	session.Set("captcha", captchaId)

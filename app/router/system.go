@@ -27,9 +27,9 @@ func SystemRouter(r *gin.Engine) {
 	sr.GET("main", controller.FramePage)
 
 	// log
-	sr.GET("/log/list", controller.LogList)
-	sr.GET("/log/operate", controller.LogOperate)
-	sr.GET("/log/login", controller.LogLogin)
+	sr.GET("log/list", controller.LogList)
+	sr.GET("log/operate", controller.LogOperate)
+	sr.GET("log/login", controller.LogLogin)
 
 	// role 管理员列表页
 	sr.GET("admin/list", controller.AdminList)

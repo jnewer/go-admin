@@ -54,4 +54,11 @@ const (
 	ImgHeight    = 80
 	ImgWidth     = 240
 	ImgKeyLength = 4
+
+	// task
+	Local    = 1
+	Remote   = 2
+	MaxPool  = 10
+	ToLocal  = 1
+	ToRemote = 2
 )

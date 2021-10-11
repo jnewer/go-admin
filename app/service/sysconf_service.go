@@ -5,9 +5,9 @@ import (
 	"github.com/cilidm/toolbox/gconv"
 	"pear-admin-go/app/core/cache"
 	dao2 "pear-admin-go/app/dao"
+	e2 "pear-admin-go/app/global/e"
 	"pear-admin-go/app/global/request"
 	"pear-admin-go/app/model"
-	"pear-admin-go/app/util/e"
 	"strings"
 	"time"
 )
@@ -76,7 +76,7 @@ func MailEditService(f request.MailConfForm) error {
 }
 
 func GetMailTestConf() (testMail model.MailTest) {
-	mail, has := cache.Instance().Get(e.TestMailConf)
+	mail, has := cache.Instance().Get(e2.TestMailConf)
 	if has {
 		testMail = mail.(model.MailTest)
 	}

@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"github.com/cilidm/toolbox/gconv"
 	pkg "github.com/cilidm/toolbox/str"
+	"pear-admin-go/app/core/log"
 	dao2 "pear-admin-go/app/dao"
-	"pear-admin-go/app/global"
+
 	"pear-admin-go/app/global/request"
 	"pear-admin-go/app/model"
 	"strings"
@@ -122,7 +123,7 @@ func FindAuthName(powerType int) []model.AuthResp {
 func GetAuthList() []model.AuthListResp {
 	authList, err := dao2.NewAuthDaoImpl().AuthList()
 	if err != nil {
-		global.Log.Warn(err.Error())
+		log.Instance().Warn(err.Error())
 		return nil
 	}
 	return authList
@@ -141,7 +142,7 @@ func FindAuthPower(id int) (power model.RolePower) {
 	)
 	ras, err := dao2.NewRoleAuthDaoImpl().FindRoleAuthByRoleID(id)
 	if err != nil {
-		global.Log.Warn(err.Error())
+		log.Instance().Warn(err.Error())
 		return power
 	}
 	for _, ra := range ras {

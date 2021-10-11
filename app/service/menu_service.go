@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"pear-admin-go/app/core/cache"
 	dao2 "pear-admin-go/app/dao"
+	e2 "pear-admin-go/app/global/e"
 	"pear-admin-go/app/model"
-	"pear-admin-go/app/util/e"
 	"strconv"
 	"time"
 )
@@ -31,7 +31,7 @@ type CacheMenuV2 struct {
 
 func MenuServiceV2(c *gin.Context) (cacheMenu CacheMenuV2) {
 	user := GetProfile(c)
-	hasMenu, found := cache.Instance().Get(e.MenuCache + gconv.String(user.ID))
+	hasMenu, found := cache.Instance().Get(e2.MenuCache + gconv.String(user.ID))
 	if found && hasMenu != nil {
 		cacheMenu = hasMenu.(CacheMenuV2)
 	} else {
@@ -88,7 +88,7 @@ func MenuServiceV2(c *gin.Context) (cacheMenu CacheMenuV2) {
 
 		cacheMenu.AllowUrl = allowUrl
 		cacheMenu.MenuResp = menu
-		cache.Instance().Set(e.MenuCache+gconv.String(user.ID), cacheMenu, time.Hour)
+		cache.Instance().Set(e2.MenuCache+gconv.String(user.ID), cacheMenu, time.Hour)
 	}
 	return cacheMenu
 }

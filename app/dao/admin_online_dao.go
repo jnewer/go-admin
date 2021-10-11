@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"pear-admin-go/app/global"
+	"pear-admin-go/app/core/db"
 	"pear-admin-go/app/model"
 )
 
@@ -19,11 +19,11 @@ type AdminOnlineDaoImpl struct {
 }
 
 func (a *AdminOnlineDaoImpl) Insert(online model.AdminOnline) error {
-	err := global.DBConn.Create(&online).Error
+	err := db.Instance().Create(&online).Error
 	return err
 }
 
 func (a *AdminOnlineDaoImpl) Delete(sessionID string) error {
-	err := global.DBConn.Where("session_id = ?", sessionID).Delete(model.AdminOnline{}).Error
+	err := db.Instance().Where("session_id = ?", sessionID).Delete(model.AdminOnline{}).Error
 	return err
 }

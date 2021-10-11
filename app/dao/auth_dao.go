@@ -2,7 +2,7 @@ package dao
 
 import (
 	"github.com/cilidm/toolbox/gconv"
-	"pear-admin-go/app/global"
+	"pear-admin-go/app/core/db"
 	"pear-admin-go/app/model"
 	"strings"
 )
@@ -27,7 +27,7 @@ type AuthDaoImpl struct {
 }
 
 func (a *AuthDaoImpl) AuthList() (authResp []model.AuthListResp, err error) {
-	client := global.DBConn
+	client := db.Instance()
 	err = client.Raw("SELECT a.id AS cate_id, a.auth_name AS cate_name, b.id AS menu_id, " +
 		"b.auth_name AS menu_name, b.auth_url AS menu_url FROM auth a JOIN auth b ON b.pid = a.id " +
 		"WHERE a.power_type = '0' AND b.power_type = 1 ORDER BY a.id ASC, a.sort ASC").Scan(&authResp).Error
@@ -38,7 +38,7 @@ func (a *AuthDaoImpl) AuthList() (authResp []model.AuthListResp, err error) {
 }
 
 func (a *AuthDaoImpl) DeleteUse() error {
-	client := global.DBConn
+	client := db.Instance()
 	var secondAuth []model.Auth
 	client.Where("pid = 20").Find(&secondAuth)
 	if len(secondAuth) > 0 {
@@ -52,14 +52,14 @@ func (a *AuthDaoImpl) DeleteUse() error {
 }
 
 func (a *AuthDaoImpl) Insert(auth model.Auth) (authID uint, err error) {
-	client := global.DBConn
+	client := db.Instance()
 	err = client.Create(&auth).Error
 	return auth.ID, nil
 }
 
 func (a *AuthDaoImpl) Find(page, pageSize int, filters ...interface{}) (auths []model.Auth, total int64) {
 	offset := (page - 1) * pageSize
-	client := global.DBConn
+	client := db.Instance()
 	client = client.Model(model.Auth{})
 	var queryArr []string
 	var values []interface{}
@@ -76,20 +76,20 @@ func (a *AuthDaoImpl) Find(page, pageSize int, filters ...interface{}) (auths []
 }
 
 func (a *AuthDaoImpl) FindOne(id int) (auth model.Auth, err error) {
-	client := global.DBConn
+	client := db.Instance()
 	client.First(&auth, id)
 	return auth, client.Error
 }
 
 func (a *AuthDaoImpl) FindChildNode(id int) (int, error) {
 	var count int
-	client := global.DBConn
+	client := db.Instance()
 	client.Model(model.Auth{}).Where("status = 1 AND pid = ?", id).Count(&count)
 	return count, client.Error
 }
 
 func (a *AuthDaoImpl) Update(auth model.Auth, attr map[string]interface{}) error {
-	client := global.DBConn
+	client := db.Instance()
 	if _, ok := attr["pid"]; ok {
 		attr["pid"] = gconv.Int(attr["pid"])
 	}
@@ -107,7 +107,7 @@ func (a *AuthDaoImpl) Update(auth model.Auth, attr map[string]interface{}) error
 }
 
 func (a *AuthDaoImpl) Delete(id int) error {
-	client := global.DBConn
+	client := db.Instance()
 	client.Where("id = ?", id).Delete(model.Auth{})
 	return client.Error
 }
