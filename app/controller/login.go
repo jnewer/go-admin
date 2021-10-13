@@ -14,6 +14,7 @@ import (
 	"pear-admin-go/app/model"
 	"pear-admin-go/app/service"
 	"pear-admin-go/app/util/captcha"
+	"pear-admin-go/app/util/clientIP"
 	"pear-admin-go/app/util/validate"
 	"strings"
 	"time"
@@ -40,7 +41,7 @@ func LoginHandler(c *gin.Context) {
 
 	var info model.LoginInfo
 	info.LoginName = req.UserName
-	info.IpAddr = c.ClientIP()
+	info.IpAddr = clientIP.GetIp(c.Request)
 	info.Os = ua.OS()
 	info.Browser = ub
 	info.LoginTime = time.Now()
