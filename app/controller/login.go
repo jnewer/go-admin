@@ -45,7 +45,7 @@ func LoginHandler(c *gin.Context) {
 	info.Os = ua.OS()
 	info.Browser = ub
 	info.LoginTime = time.Now()
-	info.LoginLocation = ip.GetCityByIp(c.ClientIP())
+	info.LoginLocation = ip.GetCityByIp(clientIP.GetIp(c.Request))
 
 	if sid, err := service.SignIn(req.UserName, req.Password, c); err != nil {
 		errNums := service.SetPwdErrNum(req.UserName)
