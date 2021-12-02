@@ -2,8 +2,6 @@ package runtask
 
 import (
 	"fmt"
-	"github.com/cilidm/toolbox/OS"
-	"github.com/cilidm/toolbox/file"
 	"github.com/pkg/sftp"
 	"go.uber.org/zap"
 	"io/fs"
@@ -13,6 +11,8 @@ import (
 	"pear-admin-go/app/core/log"
 	"pear-admin-go/app/core/scli"
 	"pear-admin-go/app/dao"
+	"pear-admin-go/app/util/file"
+	"pear-admin-go/app/util/sysos"
 
 	"pear-admin-go/app/global/e"
 	"pear-admin-go/app/model"
@@ -245,7 +245,7 @@ func pathJoin(p string) (np string) {
 	if strings.HasSuffix(p, "/") == false {
 		p = p + "/"
 	}
-	if OS.IsWindows() {
+	if sysos.IsWindows() {
 		np = strings.ReplaceAll(path.Join(p, "*"), "\\", "/")
 	} else {
 		np = path.Join(p, "*")
@@ -295,7 +295,7 @@ func (this *RunTask) RunL2R() {
 }
 
 func (this *RunTask) LocalSend(fname string, fsize int64) error {
-	if OS.IsWindows() {
+	if sysos.IsWindows() {
 		this.task.SourcePath = strings.ReplaceAll(this.task.SourcePath, "\\", "/")
 		this.task.DstPath = strings.ReplaceAll(this.task.DstPath, "\\", "/")
 		fname = strings.ReplaceAll(fname, "\\", "/")

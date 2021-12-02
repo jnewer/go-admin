@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"github.com/cilidm/toolbox/OS"
-	f "github.com/cilidm/toolbox/file"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
@@ -14,6 +12,8 @@ import (
 	"pear-admin-go/app/global/response"
 	"pear-admin-go/app/model"
 	"pear-admin-go/app/service"
+	f "pear-admin-go/app/util/file"
+	"pear-admin-go/app/util/sysos"
 	"strings"
 	"time"
 )
@@ -40,7 +40,7 @@ func Upload(c *gin.Context) {
 		return
 	}
 	backFilePath := filepath.Join(filepath.Join(config.Instance().App.ImgUrlPath, day), file.Filename)
-	if OS.IsWindows() {
+	if sysos.IsWindows() {
 		backFilePath = strings.ReplaceAll(backFilePath, "\\", "/")
 	}
 	response.SuccessResp(c).SetData(backFilePath).SetType(model.OperAdd).Log(e.DefaultUpload, file).WriteJsonExit()

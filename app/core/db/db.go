@@ -2,7 +2,7 @@ package db
 
 import (
 	"fmt"
-	"github.com/cilidm/toolbox/file"
+	"pear-admin-go/app/util/file"
 	"github.com/gchaincl/dotsql"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
