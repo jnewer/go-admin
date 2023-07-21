@@ -1,10 +1,11 @@
 package response
 
 import (
+	e2 "go-admin/app/global/e"
+	"net/http"
+
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"net/http"
-	e2 "pear-admin-go/app/global/e"
 )
 
 // 通用tpl响应
@@ -13,7 +14,7 @@ type TplResp struct {
 	tpl string
 }
 
-//返回一个tpl响应
+// 返回一个tpl响应
 func BuildTpl(c *gin.Context, tpl string) *TplResp {
 	var t = TplResp{
 		c:   c,
@@ -22,7 +23,7 @@ func BuildTpl(c *gin.Context, tpl string) *TplResp {
 	return &t
 }
 
-//返回一个错误的tpl响应
+// 返回一个错误的tpl响应
 func ErrorTpl(c *gin.Context) *TplResp {
 	var t = TplResp{
 		c:   c,
@@ -31,7 +32,7 @@ func ErrorTpl(c *gin.Context) *TplResp {
 	return &t
 }
 
-//返回一个无操作权限tpl响应
+// 返回一个无操作权限tpl响应
 func ForbiddenTpl(c *gin.Context) *TplResp {
 	var t = TplResp{
 		c:   c,
@@ -40,7 +41,7 @@ func ForbiddenTpl(c *gin.Context) *TplResp {
 	return &t
 }
 
-//输出页面模板
+// 输出页面模板
 func (resp *TplResp) WriteTpl(params ...gin.H) {
 	session := sessions.Default(resp.c)
 	uid := session.Get(e2.Auth)

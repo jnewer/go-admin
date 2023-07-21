@@ -1,70 +1,70 @@
 {
 	"logo": {
 		"title": "Pear Admin",
-		"image": "/static/admin/images/logo.png"
+		"image": "admin/images/logo.png"
 	},
 	"menu": {
-		"data": "/system/menu",
-		"accordion": true,
+		"data": "admin/data/menu.json",
 		"method": "GET",
+		"accordion": true,
+		"collapse": false,
 		"control": false,
-		"select": "60"
+		"controlWidth": 500,
+		"select": "10",
+		"async": true
 	},
 	"tab": {
-		"muiltTab": true,
+		"enable": true,
 		"keepState": true,
-		"tabMax": 30,
+		"session": true,
+		"preload": false,
+		"max": "30",
 		"index": {
-			"id": "60",
-			"href": "/system/main",
+			"id": "10",
+			"href": "view/console/console1.html",
 			"title": "首页"
 		}
 	},
 	"theme": {
 		"defaultColor": "2",
 		"defaultMenu": "dark-theme",
-		"allowCustom": true
+		"defaultHeader": "light-theme",
+		"allowCustom": true,
+		"banner": false
 	},
-	"colors": [{
+	"colors": [
+		{
 			"id": "1",
-			"color": "#2d8cf0"
+			"color": "#2d8cf0",
+			"second": "#ecf5ff"
 		},
 		{
 			"id": "2",
-			"color": "#5FB878"
+			"color": "#36b368",
+			"second": "#f0f9eb"
 		},
 		{
 			"id": "3",
-			"color": "#1E9FFF"
-		}, {
+			"color": "#f6ad55",
+			"second": "#fdf6ec"
+		},
+		{
 			"id": "4",
-			"color": "#FFB800"
-		}, {
+			"color": "#f56c6c",
+			"second": "#fef0f0"
+		},
+		{
 			"id": "5",
-			"color": "darkgray"
-		}
-	],
-	"links": [{
-			"icon": "layui-icon layui-icon-auz",
-			"title": "官方网站",
-			"href": "http://www.pearadmin.com"
-		},
-		{
-			"icon": "layui-icon layui-icon-auz",
-			"title": "开发文档",
-			"href": "http://www.pearadmin.com"
-		},
-		{
-			"icon": "layui-icon layui-icon-auz",
-			"title": "开源地址",
-			"href": "https://gitee.com/Jmysy/Pear-Admin-Layui"
+			"color": "#3963bc",
+			"second": "#ecf5ff"
 		}
 	],
 	"other": {
-		"keepLoad": 100,
-		"autoHead": false
+		"keepLoad": "1200",
+		"autoHead": false,
+		"footer": false
 	},
 	"header": {
-		"message": "/static/admin/data/message.json"
+		"message": "admin/data/message.json"
 	}
 }

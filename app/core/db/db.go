@@ -2,16 +2,17 @@ package db
 
 import (
 	"fmt"
-	"pear-admin-go/app/util/file"
+	"go-admin/app/core/config"
+	"go-admin/app/core/log"
+	"go-admin/app/global/initial"
+	"go-admin/app/model"
+	"go-admin/app/util/file"
+	"os"
+
 	"github.com/gchaincl/dotsql"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"os"
-	"pear-admin-go/app/core/config"
-	"pear-admin-go/app/core/log"
-	"pear-admin-go/app/global/initial"
-	"pear-admin-go/app/model"
 )
 
 var conn *gorm.DB

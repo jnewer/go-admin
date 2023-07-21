@@ -1,15 +1,16 @@
 package captcha
 
 import (
-	"github.com/mojocn/base64Captcha"
+	e "go-admin/app/global/e"
 	"image/color"
-	e "pear-admin-go/app/global/e"
+
+	"github.com/mojocn/base64Captcha"
 )
 
 // 设置自带的store
 var store = base64Captcha.DefaultMemStore
 
-//生成验证码
+// 生成验证码
 func CaptMake() (id, b64s string, err error) {
 	driver := mathCaptcha()
 	captcha := base64Captcha.NewCaptcha(driver, store)
@@ -46,7 +47,7 @@ func stringCaptcha() base64Captcha.Driver {
 	return driver
 }
 
-//验证captcha是否正确
+// 验证captcha是否正确
 func CaptVerify(id string, capt string) bool {
 	if store.Verify(id, capt, false) {
 		return true

@@ -1,21 +1,22 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
+	"go-admin/app/core/cache"
+	"go-admin/app/core/config"
+	"go-admin/app/global/e"
+	"go-admin/app/global/response"
+	"go-admin/app/model"
+	"go-admin/app/service"
+	f "go-admin/app/util/file"
+	"go-admin/app/util/sysos"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
-	"pear-admin-go/app/core/cache"
-	"pear-admin-go/app/core/config"
-	"pear-admin-go/app/global/e"
-	"pear-admin-go/app/global/response"
-	"pear-admin-go/app/model"
-	"pear-admin-go/app/service"
-	f "pear-admin-go/app/util/file"
-	"pear-admin-go/app/util/sysos"
 	"strings"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 func Upload(c *gin.Context) {

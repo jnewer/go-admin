@@ -1,10 +1,11 @@
 package redis
 
 import (
+	"go-admin/app/core/config"
+	"go-admin/app/core/log"
+
 	"github.com/go-redis/redis"
 	"go.uber.org/zap"
-	"pear-admin-go/app/core/config"
-	"pear-admin-go/app/core/log"
 )
 
 var redisCli *redis.Client

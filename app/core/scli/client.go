@@ -2,13 +2,14 @@ package scli
 
 import (
 	"fmt"
-	"github.com/pkg/sftp"
-	"golang.org/x/crypto/ssh"
+	"go-admin/app/core/log"
 	"io/ioutil"
 	"net"
-	"pear-admin-go/app/core/log"
 
-	"pear-admin-go/app/model"
+	"github.com/pkg/sftp"
+	"golang.org/x/crypto/ssh"
+
+	"go-admin/app/model"
 	"time"
 )
 

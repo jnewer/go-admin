@@ -1,13 +1,14 @@
 package controller
 
 import (
-	"pear-admin-go/app/util/gconv"
-	"github.com/gin-gonic/gin"
+	"go-admin/app/global/request"
+	"go-admin/app/global/response"
+	"go-admin/app/service"
+	"go-admin/app/util/gconv"
+	"go-admin/app/util/validate"
 	"net/http"
-	"pear-admin-go/app/global/request"
-	"pear-admin-go/app/global/response"
-	"pear-admin-go/app/service"
-	"pear-admin-go/app/util/validate"
+
+	"github.com/gin-gonic/gin"
 )
 
 func ServerList(c *gin.Context) {

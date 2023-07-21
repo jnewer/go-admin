@@ -90,4 +90,11 @@ body {
 	float: right;
 	height: 42px;
 	border: #e6e6e6 1px solid;
+	cursor: pointer;
+}
+
+@media (max-width:768px){
+	body{
+		background-position:center;
+	}
 }

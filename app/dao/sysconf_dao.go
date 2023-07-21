@@ -1,8 +1,8 @@
 package dao
 
 import (
-	"pear-admin-go/app/core/db"
-	"pear-admin-go/app/model"
+	"go-admin/app/core/db"
+	"go-admin/app/model"
 )
 
 type SysConfDao interface {

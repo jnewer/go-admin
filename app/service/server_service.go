@@ -3,12 +3,12 @@ package service
 import (
 	"errors"
 	"fmt"
-	"pear-admin-go/app/util/str"
-	"pear-admin-go/app/core/log"
-	"pear-admin-go/app/dao"
+	"go-admin/app/core/log"
+	"go-admin/app/dao"
+	"go-admin/app/util/str"
 
-	"pear-admin-go/app/global/request"
-	"pear-admin-go/app/model"
+	"go-admin/app/global/request"
+	"go-admin/app/model"
 	"time"
 )
 

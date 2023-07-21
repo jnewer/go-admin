@@ -2,12 +2,13 @@ package response
 
 import (
 	"encoding/json"
-	"pear-admin-go/app/util/gconv"
-	"github.com/gin-gonic/gin"
+	"go-admin/app/core/log"
+	"go-admin/app/model"
+	"go-admin/app/service"
+	"go-admin/app/util/gconv"
 	"net/http"
-	"pear-admin-go/app/core/log"
-	"pear-admin-go/app/model"
-	"pear-admin-go/app/service"
+
+	"github.com/gin-gonic/gin"
 )
 
 type ApiResp struct {
@@ -15,7 +16,7 @@ type ApiResp struct {
 	r *model.CommonResp
 }
 
-//返回一个成功的消息体
+// 返回一个成功的消息体
 func SuccessResp(c *gin.Context) *ApiResp {
 	msg := model.CommonResp{
 		Code: 200,
@@ -29,7 +30,7 @@ func SuccessResp(c *gin.Context) *ApiResp {
 	return &a
 }
 
-//返回一个错误的消息体
+// 返回一个错误的消息体
 func ErrorResp(c *gin.Context) *ApiResp {
 	msg := model.CommonResp{
 		Code: 500,
@@ -43,7 +44,7 @@ func ErrorResp(c *gin.Context) *ApiResp {
 	return &a
 }
 
-//返回一个拒绝访问的消息体
+// 返回一个拒绝访问的消息体
 func ForbiddenResp(c *gin.Context) *ApiResp {
 	msg := model.CommonResp{
 		Code: 403,
@@ -71,37 +72,37 @@ func UnauthorizedResp(c *gin.Context) *ApiResp {
 	return &a
 }
 
-//设置消息体的内容
+// 设置消息体的内容
 func (resp *ApiResp) SetMsg(msg string) *ApiResp {
 	resp.r.Msg = msg
 	return resp
 }
 
-//设置消息体的编码
+// 设置消息体的编码
 func (resp *ApiResp) SetCode(code int) *ApiResp {
 	resp.r.Code = code
 	return resp
 }
 
-//设置消息体的数据
+// 设置消息体的数据
 func (resp *ApiResp) SetData(data interface{}) *ApiResp {
 	resp.r.Data = data
 	return resp
 }
 
-//设置消息体的业务类型
+// 设置消息体的业务类型
 func (resp *ApiResp) SetType(btype model.OperationType) *ApiResp {
 	resp.r.Type = btype
 	return resp
 }
 
-//设置消息体的业务类型
+// 设置消息体的业务类型
 func (resp *ApiResp) SetCount(count int) *ApiResp {
 	resp.r.Count = count
 	return resp
 }
 
-//记录操作日志到数据库
+// 记录操作日志到数据库
 func (resp *ApiResp) Log(title string, inParam interface{}) *ApiResp {
 	var inContentStr string
 	switch inParam.(type) {
@@ -125,7 +126,7 @@ func (resp *ApiResp) Log(title string, inParam interface{}) *ApiResp {
 	return resp
 }
 
-//输出json到客户端
+// 输出json到客户端
 func (resp *ApiResp) WriteJsonExit() {
 	resp.c.JSON(http.StatusOK, resp.r)
 	resp.c.Abort()

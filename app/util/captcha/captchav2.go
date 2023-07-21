@@ -2,13 +2,14 @@ package captcha
 
 import (
 	"bytes"
+	e2 "go-admin/app/global/e"
+	"go-admin/app/global/response"
+	"net/http"
+	"time"
+
 	"github.com/dchest/captcha"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"net/http"
-	e2 "pear-admin-go/app/global/e"
-	"pear-admin-go/app/global/response"
-	"time"
 )
 
 func Captcha(c *gin.Context) {

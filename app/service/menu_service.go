@@ -1,15 +1,16 @@
 package service
 
 import (
-	"pear-admin-go/app/util/gconv"
-	pkg "pear-admin-go/app/util/str"
-	"github.com/gin-gonic/gin"
-	"pear-admin-go/app/core/cache"
-	dao2 "pear-admin-go/app/dao"
-	e2 "pear-admin-go/app/global/e"
-	"pear-admin-go/app/model"
+	"go-admin/app/core/cache"
+	dao2 "go-admin/app/dao"
+	e2 "go-admin/app/global/e"
+	"go-admin/app/model"
+	"go-admin/app/util/gconv"
+	pkg "go-admin/app/util/str"
 	"strconv"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 type SelfMenuData struct {

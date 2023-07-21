@@ -1,6 +1,6 @@
 package request
 
-import "pear-admin-go/app/model"
+import "go-admin/app/model"
 
 type LoginForm struct {
 	UserName string `json:"username" form:"username" binding:"required,min=3,max=30" zh:"用户名"`

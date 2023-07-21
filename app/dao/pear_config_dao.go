@@ -1,9 +1,10 @@
 package dao
 
 import (
+	"go-admin/app/core/db"
+	"go-admin/app/model"
+
 	"github.com/jinzhu/gorm"
-	"pear-admin-go/app/core/db"
-	"pear-admin-go/app/model"
 )
 
 type SiteConfigDao interface {

@@ -1,11 +1,11 @@
 package dao
 
 import (
-	"pear-admin-go/app/core/db"
+	"go-admin/app/core/db"
 	"strings"
 
-	"pear-admin-go/app/util/gconv"
-	"pear-admin-go/app/model"
+	"go-admin/app/model"
+	"go-admin/app/util/gconv"
 )
 
 type AdminDao interface {

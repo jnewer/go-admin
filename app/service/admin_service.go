@@ -3,21 +3,22 @@ package service
 import (
 	"encoding/json"
 	"errors"
-	"pear-admin-go/app/util/gconv"
-	pkg "pear-admin-go/app/util/str"
-	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
-	"pear-admin-go/app/core/cache"
-	"pear-admin-go/app/core/config"
-	"pear-admin-go/app/core/log"
-	"pear-admin-go/app/dao"
-	e2 "pear-admin-go/app/global/e"
-	"pear-admin-go/app/global/request"
-	"pear-admin-go/app/model"
-	"pear-admin-go/app/util/session"
+	"go-admin/app/core/cache"
+	"go-admin/app/core/config"
+	"go-admin/app/core/log"
+	"go-admin/app/dao"
+	e2 "go-admin/app/global/e"
+	"go-admin/app/global/request"
+	"go-admin/app/model"
+	"go-admin/app/util/gconv"
+	"go-admin/app/util/session"
+	pkg "go-admin/app/util/str"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 func BuildFilter(r request.AdminForm) []interface{} {
@@ -250,7 +251,7 @@ func SignIn(loginName, password string, c *gin.Context) (string, error) {
 
 var SessionList sync.Map
 
-//保存用户信息到session
+// 保存用户信息到session
 func SaveUserToSession(admin model.Admin, c *gin.Context) (string, error) {
 	err := session.Del(c, e2.Auth)
 	if err != nil {
@@ -271,7 +272,7 @@ func SaveUserToSession(admin model.Admin, c *gin.Context) (string, error) {
 	return gconv.String(admin.ID), nil
 }
 
-//清空用户菜单缓存
+// 清空用户菜单缓存
 func ClearMenuCache(user *model.Admin) {
 	if IsAdmin(user) {
 		cache.Instance().Delete(e2.Menu)
@@ -396,7 +397,7 @@ func GetLoginInfo(c *gin.Context) ([]model.LoginInfo, error) {
 	return info, nil
 }
 
-//修改用户密码
+// 修改用户密码
 func PwdEditHandlerService(profile request.PasswordForm, c *gin.Context) error {
 	if profile.NewPwd == profile.OldPwd {
 		return errors.New("新旧密码不能相同")

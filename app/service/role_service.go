@@ -2,17 +2,18 @@ package service
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	"pear-admin-go/app/core/cache"
-	"pear-admin-go/app/core/db"
-	"pear-admin-go/app/core/log"
-	dao2 "pear-admin-go/app/dao"
-	"pear-admin-go/app/util/gconv"
-	pkg "pear-admin-go/app/util/str"
+	"go-admin/app/core/cache"
+	"go-admin/app/core/db"
+	"go-admin/app/core/log"
+	dao2 "go-admin/app/dao"
+	"go-admin/app/util/gconv"
+	pkg "go-admin/app/util/str"
 
-	e2 "pear-admin-go/app/global/e"
-	"pear-admin-go/app/global/request"
-	"pear-admin-go/app/model"
+	"github.com/gin-gonic/gin"
+
+	e2 "go-admin/app/global/e"
+	"go-admin/app/global/request"
+	"go-admin/app/model"
 	"strings"
 )
 

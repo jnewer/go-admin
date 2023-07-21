@@ -2,14 +2,15 @@ package router
 
 import (
 	"embed"
+	"go-admin/app/core/config"
 	"html/template"
 	"io/fs"
 	"net/http"
-	"pear-admin-go/app/core/config"
+
+	"go-admin/app/middleware"
+	"go-admin/app/util/session"
 
 	"github.com/gin-gonic/gin"
-	"pear-admin-go/app/middleware"
-	"pear-admin-go/app/util/session"
 )
 
 func InitRouter(staticFs, templateFs embed.FS) *gin.Engine {

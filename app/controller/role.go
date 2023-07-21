@@ -1,19 +1,20 @@
 package controller
 
 import (
-	"pear-admin-go/app/util/gconv"
-	pkg "pear-admin-go/app/util/str"
-	"github.com/gin-gonic/gin"
+	"go-admin/app/core/cache"
+	dao2 "go-admin/app/dao"
+	e2 "go-admin/app/global/e"
+	"go-admin/app/global/request"
+	"go-admin/app/global/response"
+	"go-admin/app/model"
+	"go-admin/app/service"
+	"go-admin/app/util/gconv"
+	pkg "go-admin/app/util/str"
+	"go-admin/app/util/validate"
 	"net/http"
-	"pear-admin-go/app/core/cache"
-	dao2 "pear-admin-go/app/dao"
-	e2 "pear-admin-go/app/global/e"
-	"pear-admin-go/app/global/request"
-	"pear-admin-go/app/global/response"
-	"pear-admin-go/app/model"
-	"pear-admin-go/app/service"
-	"pear-admin-go/app/util/validate"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 func IconShow(c *gin.Context) {

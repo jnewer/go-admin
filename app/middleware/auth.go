@@ -1,14 +1,15 @@
 package middleware
 
 import (
-	"pear-admin-go/app/util/gconv"
-	pkg "pear-admin-go/app/util/str"
-	"github.com/gin-gonic/gin"
+	"go-admin/app/core/cache"
+	e2 "go-admin/app/global/e"
+	"go-admin/app/service"
+	"go-admin/app/util/gconv"
+	pkg "go-admin/app/util/str"
 	"net/http"
-	"pear-admin-go/app/core/cache"
-	e2 "pear-admin-go/app/global/e"
-	"pear-admin-go/app/service"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 func AuthMiddleware(c *gin.Context) {

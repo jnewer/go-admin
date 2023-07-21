@@ -8,8 +8,8 @@
 		"password": "$2a$10$1K7E1.IYCrsoZVCb6utOo.5jENtfOzhdKWhc49t2lk.UQd7Oam4FG",
 		"salt": null,
 		"status": null,
-		"realName": "超级管理员",
-		"email": "8540854@qq.com",
+		"realName": "超级'管'理员",
+		"email": "854085'4@'qq.com",
 		"avatar": null,
 		"sex": "1",
 		"phone": "15543526531",
@@ -22,7 +22,7 @@
 		"password": null,
 		"salt": null,
 		"status": null,
-		"realName": "就眠仪式",
+		"realName": "就\"眠\"仪式",
 		"email": null,
 		"avatar": null,
 		"sex": "1",
@@ -44,7 +44,7 @@
 		"enable": "1",
 		"login": "1",
 		"roleIds": null
-	},{
+	}, {
 		"userId": "4",
 		"username": "admin",
 		"password": "$2a$10$1K7E1.IYCrsoZVCb6utOo.5jENtfOzhdKWhc49t2lk.UQd7Oam4FG",
@@ -86,7 +86,7 @@
 		"enable": "1",
 		"login": "1",
 		"roleIds": null
-	},{
+	}, {
 		"userId": "7",
 		"username": "admin",
 		"password": "$2a$10$1K7E1.IYCrsoZVCb6utOo.5jENtfOzhdKWhc49t2lk.UQd7Oam4FG",

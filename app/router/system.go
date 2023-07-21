@@ -1,9 +1,10 @@
 package router
 
 import (
+	controller "go-admin/app/controller"
+	"go-admin/app/middleware"
+
 	"github.com/gin-gonic/gin"
-	controller "pear-admin-go/app/controller"
-	"pear-admin-go/app/middleware"
 )
 
 func SystemRouter(r *gin.Engine) {

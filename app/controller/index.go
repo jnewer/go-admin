@@ -1,12 +1,13 @@
 package controller
 
 import (
-	pkg "pear-admin-go/app/util/file"
-	"github.com/gin-gonic/gin"
+	e2 "go-admin/app/global/e"
+	"go-admin/app/service"
+	pkg "go-admin/app/util/file"
 	"html/template"
 	"net/http"
-	e2 "pear-admin-go/app/global/e"
-	"pear-admin-go/app/service"
+
+	"github.com/gin-gonic/gin"
 )
 
 func Index(c *gin.Context) {

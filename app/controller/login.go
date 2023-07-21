@@ -1,23 +1,24 @@
 package controller
 
 import (
-	"pear-admin-go/app/util/gconv"
-	"pear-admin-go/app/util/ip"
-	pkg "pear-admin-go/app/util/str"
-	"github.com/gin-gonic/gin"
-	"github.com/mssola/user_agent"
+	"go-admin/app/dao"
+	"go-admin/app/global/e"
+	"go-admin/app/global/request"
+	response2 "go-admin/app/global/response"
+	"go-admin/app/model"
+	"go-admin/app/service"
+	"go-admin/app/util/captcha"
+	"go-admin/app/util/clientIP"
+	"go-admin/app/util/gconv"
+	"go-admin/app/util/ip"
+	pkg "go-admin/app/util/str"
+	"go-admin/app/util/validate"
 	"net/http"
-	"pear-admin-go/app/dao"
-	"pear-admin-go/app/global/e"
-	"pear-admin-go/app/global/request"
-	response2 "pear-admin-go/app/global/response"
-	"pear-admin-go/app/model"
-	"pear-admin-go/app/service"
-	"pear-admin-go/app/util/captcha"
-	"pear-admin-go/app/util/clientIP"
-	"pear-admin-go/app/util/validate"
 	"strings"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/mssola/user_agent"
 )
 
 func Login(c *gin.Context) {
@@ -120,10 +121,9 @@ func CaptchaVerify(c *gin.Context) {
 		return
 	}
 
-	if captcha.CaptVerify(id, strings.ToLower(capt)) == true {
+	if captcha.CaptVerify(id, strings.ToLower(capt)) {
 		response2.SuccessResp(c).WriteJsonExit()
 	} else {
 		response2.ErrorResp(c).SetMsg("验证码有误，请重新输入").WriteJsonExit()
 	}
-	return
 }

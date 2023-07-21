@@ -1,9 +1,9 @@
 package log
 
 import (
+	"go-admin/app/core/config"
 	"os"
 	"path"
-	"pear-admin-go/app/core/config"
 	"time"
 
 	"github.com/natefinch/lumberjack"
@@ -23,10 +23,10 @@ func Instance() *zap.Logger {
 func InitLog() {
 	hook := lumberjack.Logger{
 		Filename:   path.Join(config.Instance().Zaplog.Director, time.Now().Format("2006-01-02")+".log"), // 日志文件路径
-		MaxSize:    10,                                                                             // 每个日志文件保存的最大尺寸 单位：M
-		MaxBackups: 50,                                                                             // 日志文件最多保存多少个备份
-		MaxAge:     10,                                                                             // 文件最多保存多少天
-		Compress:   true,                                                                           // 是否压缩
+		MaxSize:    10,                                                                                   // 每个日志文件保存的最大尺寸 单位：M
+		MaxBackups: 50,                                                                                   // 日志文件最多保存多少个备份
+		MaxAge:     10,                                                                                   // 文件最多保存多少天
+		Compress:   true,                                                                                 // 是否压缩
 		LocalTime:  true,
 	}
 
@@ -60,7 +60,7 @@ func InitLog() {
 	// 开启文件及行号
 	development := zap.Development()
 	// 设置初始化字段
-	filed := zap.Fields(zap.String("serverName", "pear-admin-go"))
+	filed := zap.Fields(zap.String("serverName", "go-admin"))
 	// 构造日志
 	logger = zap.New(core, caller, development, filed)
 	logger.Info("log 初始化成功")

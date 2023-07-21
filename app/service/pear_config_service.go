@@ -2,10 +2,10 @@ package service
 
 import (
 	"encoding/json"
-	"pear-admin-go/app/core/cache"
-	"pear-admin-go/app/dao"
-	e2 "pear-admin-go/app/global/e"
-	"pear-admin-go/app/model"
+	"go-admin/app/core/cache"
+	"go-admin/app/dao"
+	e2 "go-admin/app/global/e"
+	"go-admin/app/model"
 )
 
 func GetPearConfig() (*model.PearConfigForm, error) {

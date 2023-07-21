@@ -1,11 +1,12 @@
 package config
 
 import (
-	"pear-admin-go/app/util/file"
-	"github.com/spf13/viper"
+	"go-admin/app/global/initial"
+	"go-admin/app/util/file"
 	"io/ioutil"
 	"log"
-	"pear-admin-go/app/global/initial"
+
+	"github.com/spf13/viper"
 )
 
 var c *conf

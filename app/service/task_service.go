@@ -2,12 +2,12 @@ package service
 
 import (
 	"errors"
-	"pear-admin-go/app/util/str"
-	"pear-admin-go/app/dao"
-	"pear-admin-go/app/global/e"
-	"pear-admin-go/app/global/request"
-	"pear-admin-go/app/model"
-	"pear-admin-go/app/util/runtask"
+	"go-admin/app/dao"
+	"go-admin/app/global/e"
+	"go-admin/app/global/request"
+	"go-admin/app/model"
+	"go-admin/app/util/runtask"
+	"go-admin/app/util/str"
 	"runtime"
 	"strings"
 	"time"

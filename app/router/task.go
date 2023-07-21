@@ -1,8 +1,9 @@
 package router
 
 import (
+	"go-admin/app/controller"
+
 	"github.com/gin-gonic/gin"
-	"pear-admin-go/app/controller"
 )
 
 func TaskRouter(r *gin.Engine) {

@@ -1,11 +1,12 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
+	"go-admin/app/global/request"
+	"go-admin/app/global/response"
+	"go-admin/app/service"
 	"net/http"
-	"pear-admin-go/app/global/request"
-	"pear-admin-go/app/global/response"
-	"pear-admin-go/app/service"
+
+	"github.com/gin-gonic/gin"
 )
 
 func LogList(c *gin.Context) {

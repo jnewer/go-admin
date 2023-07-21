@@ -15,7 +15,7 @@ type CommonResp struct {
 
 type OperationType int
 
-//业务类型
+// 业务类型
 const (
 	OperOther OperationType = 0 //0其它
 	OperAdd   OperationType = 1 //1新增
@@ -23,7 +23,7 @@ const (
 	OperDel   OperationType = 3 //3删除
 )
 
-//响应结果
+// 响应结果
 const (
 	SUCCESS      = 0   // 成功
 	ERROR        = 500 //错误

@@ -1,14 +1,15 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
+	e2 "go-admin/app/global/e"
+	"go-admin/app/global/request"
+	"go-admin/app/global/response"
+	"go-admin/app/model"
+	"go-admin/app/service"
+	"go-admin/app/util/validate"
 	"net/http"
-	e2 "pear-admin-go/app/global/e"
-	"pear-admin-go/app/global/request"
-	"pear-admin-go/app/global/response"
-	"pear-admin-go/app/model"
-	"pear-admin-go/app/service"
-	"pear-admin-go/app/util/validate"
+
+	"github.com/gin-gonic/gin"
 )
 
 func UserEdit(c *gin.Context) {

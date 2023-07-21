@@ -1,8 +1,8 @@
 package service
 
 import (
-	"pear-admin-go/app/core/config"
-	"pear-admin-go/app/core/db"
+	"go-admin/app/core/config"
+	"go-admin/app/core/db"
 	"testing"
 )
 

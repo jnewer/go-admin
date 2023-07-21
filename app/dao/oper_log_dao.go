@@ -1,9 +1,9 @@
 package dao
 
 import (
-	"pear-admin-go/app/util/gconv"
-	"pear-admin-go/app/core/db"
-	"pear-admin-go/app/model"
+	"go-admin/app/core/db"
+	"go-admin/app/model"
+	"go-admin/app/util/gconv"
 	"strings"
 )
 
